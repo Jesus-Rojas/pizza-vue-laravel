@@ -14,9 +14,9 @@ return new class extends Migration
 
             // foraneas
             $table->foreignId('users_id')
-                ->references('users')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->constrained()
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
             $table->timestamps();
         });
     }

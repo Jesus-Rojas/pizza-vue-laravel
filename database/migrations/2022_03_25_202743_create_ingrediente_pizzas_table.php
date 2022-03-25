@@ -13,13 +13,13 @@ return new class extends Migration
             
             // foraneas
             $table->foreignId('pizzas_id')
-                ->references('pizzas')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->constrained()
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
             $table->foreignId('ingredientes_id')
-                ->references('ingredientes')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
+                ->constrained()
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
             
             $table->timestamps();
         });

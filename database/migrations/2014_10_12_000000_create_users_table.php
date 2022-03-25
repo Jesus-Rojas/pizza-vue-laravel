@@ -12,16 +12,14 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->rememberToken();
 
             // foraneas
             $table->foreignId('roles_id')
-                ->references('roles')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
-            
+                ->constrained()
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+
             $table->timestamps();
         });
     }
