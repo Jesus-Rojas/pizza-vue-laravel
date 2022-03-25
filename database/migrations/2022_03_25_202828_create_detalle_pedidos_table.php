@@ -10,6 +10,18 @@ return new class extends Migration
     {
         Schema::create('detalle_pedidos', function (Blueprint $table) {
             $table->id();
+            $table->integer('cantidad');
+            $table->integer('precio_unitario');
+
+            // foraneas
+            $table->foreignId('pizzas_id')
+                ->references('pizzas')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            $table->foreignId('pedidos_id')
+                ->references('pedidos')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }

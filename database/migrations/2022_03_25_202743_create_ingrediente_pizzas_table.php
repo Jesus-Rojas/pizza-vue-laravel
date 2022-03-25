@@ -10,6 +10,17 @@ return new class extends Migration
     {
         Schema::create('ingrediente_pizzas', function (Blueprint $table) {
             $table->id();
+            
+            // foraneas
+            $table->foreignId('pizzas_id')
+                ->references('pizzas')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            $table->foreignId('ingredientes_id')
+                ->references('ingredientes')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            
             $table->timestamps();
         });
     }

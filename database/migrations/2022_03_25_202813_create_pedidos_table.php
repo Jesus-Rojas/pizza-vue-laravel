@@ -10,6 +10,13 @@ return new class extends Migration
     {
         Schema::create('pedidos', function (Blueprint $table) {
             $table->id();
+            $table->integer('venta_total');
+
+            // foraneas
+            $table->foreignId('users_id')
+                ->references('users')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }

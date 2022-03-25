@@ -15,6 +15,13 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+
+            // foraneas
+            $table->foreignId('roles_id')
+                ->references('roles')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+            
             $table->timestamps();
         });
     }
