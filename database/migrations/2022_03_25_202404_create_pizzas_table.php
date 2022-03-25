@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->integer('precio');
+            $table->string('imagen');
             $table->integer('stock');
             $table->timestamps();
         });
