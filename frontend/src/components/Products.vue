@@ -44,7 +44,6 @@ import store from "@/store";
 
 export default {
   setup() {
-    store
     const items = ref([])
     const consultarApi = async () => {
       const { data } = await api.read()
