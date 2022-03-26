@@ -2,7 +2,6 @@
   <NavClient />
   <div class="pb-custom"/>
   <Products class="pt-5" />
-
 </template>
 
 <script>
