@@ -1,18 +1,25 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
-  </div>
+  <NavClient />
+  <div class="pb-custom"/>
+  <Products class="pt-5" />
+
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import Products from "@/components/Products";
+import NavClient from "@/components/NavClient";
 
 export default {
-  name: "HomeView",
   components: {
-    HelloWorld,
+    Products,
+    NavClient,
   },
 };
 </script>
+
+<style lang="scss" scoped>
+  .pb-custom{
+    height: 123px;
+  }
+</style>
