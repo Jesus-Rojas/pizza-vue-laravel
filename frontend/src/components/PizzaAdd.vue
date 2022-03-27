@@ -1,6 +1,7 @@
 <template>
   <modal
     v-if="condicion"
+    classCustom="size-modal-pizza"
   >
     <template v-slot:header>
       <h3>Nueva Pizza</h3>
@@ -12,6 +13,22 @@
         </div>
         <div class="col-8 text-start">
           <input type="text" class="w-75 " v-model="nombre">
+        </div>
+      </div>
+      <div class="row pb-4">
+        <div class="col-4">
+          Precio: 
+        </div>
+        <div class="col-8 text-start">
+          <input type="number" class="w-75 " v-model="precio">
+        </div>
+      </div>
+      <div class="row pb-4">
+        <div class="col-4">
+          Stock: 
+        </div>
+        <div class="col-8 text-start">
+          <input type="number" class="w-75 " v-model="stock">
         </div>
       </div>
       <div class="row pb-4">
@@ -37,7 +54,7 @@
       </div>
     </template>
     <template v-slot:footer>
-      <button class="btn btn-success me-2" @click="agregar">Agregar</button>
+      <button class="btn btn-success me-2" @click="validar">Agregar</button>
       <button class="btn btn-danger" @click="hide">Cancelar</button>
     </template>
   </modal>
@@ -47,7 +64,6 @@
 import Modal from '@/utility/Modal';
 import api from '@/services/pizza';
 import Multiselect from '@vueform/multiselect'
-// import carrito from '@/assets/cart-shopping.svg';
 
 export default {
   components: {
@@ -61,27 +77,42 @@ export default {
     }
   },
   methods: {
-    async agregar(){
-      if (
-        this.nombre.length > 0 && 
-        this.ingredientes.length > 0 && 
-        this.imagen && 
-        this.imagen.value !== ''
-      ) {
-        let ingredientes = JSON.parse(JSON.stringify(this.ingredientes))
-        ingredientes = ingredientes.map( data => data.id)
-        const formData = new FormData()
-        formData.append('nombre', 'John');
-        formData.append('imagen', this.imagen.files[0]);
-        formData.append('ingredientes', `${ingredientes}`);
-        const { mensaje, status } = await api.add(formData)
-        return
-        const type = status == 'ok' ? 'success' : 'danger';
-        this.mensaje(mensaje,type)
-        this.hide(true)
+    validar(){
+      if (!this.nombre) {
+        this.mensaje('El nombre es requerido')
         return
       }
-      this.mensaje('Algunos campos son requeridos')
+      if (!this.precio || this.precio < 0) {
+        this.mensaje('El precio es requerido')
+        return
+      }
+      if (!this.stock || this.stock < 0) {
+        this.mensaje('El stock es requerido')
+        return
+      }
+      if (!this.imagen || this.imagen.value == '') {
+        this.mensaje('La imagen es requerida')
+        return
+      }
+      if (this.ingredientes.length == 0) {
+        this.mensaje('El campo ingredientes es requerido')
+        return
+      }
+      this.agregar()
+    },
+    async agregar(){
+      let ingredientes = JSON.parse(JSON.stringify(this.ingredientes))
+      ingredientes = ingredientes.map( data => data.id)
+      const formData = new FormData()
+      formData.append('nombre', this.nombre);
+      formData.append('stock', this.stock);
+      formData.append('precio', this.precio);
+      formData.append('imagen', this.imagen.files[0]);
+      formData.append('ingredientes', JSON.stringify(ingredientes));
+      const { mensaje, status } = await api.add(formData)
+      const type = status == 'ok' ? 'success' : 'danger';
+      this.mensaje(mensaje,type)
+      this.hide(true)
     },
     toggleImage({target}){
       this.imagen = {
@@ -104,6 +135,8 @@ export default {
     return {
       nombre: '',
       imagen: null,
+      precio: null,
+      stock: null,
       ingredientes:[],
       options:[],
     }

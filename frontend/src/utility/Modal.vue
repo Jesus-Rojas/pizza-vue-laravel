@@ -1,7 +1,7 @@
 <template>
   <Transition name="fade">
     <div class="modal-backdrop">
-      <div class="modal-container">
+      <div class="modal-container" :class="classCustom">
         <div class="header-modal">
           <slot name="header"></slot>
         </div>
@@ -20,6 +20,9 @@
 import { ref } from '@vue/reactivity';
 
 export default {
+  props: [
+    'classCustom'
+  ],
   setup(){
     const show = ref(false);
     return {
@@ -55,7 +58,7 @@ export default {
 
 .modal-container {
   width: 40%;
-  height: 50%;
+  height: 35%;
   background: #fff;
   text-align: center;
   display: flex;
@@ -63,5 +66,9 @@ export default {
   justify-content: space-evenly;
   position: relative;
   border-radius: 10px;
+}
+
+.size-modal-pizza {
+  height: 70%;
 }
 </style>

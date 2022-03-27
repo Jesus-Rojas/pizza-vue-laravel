@@ -29,7 +29,7 @@
     /> -->
     
     <template v-if="items.length > 0">
-      <div class="w-75 mx-auto">
+      <div class="mx-2">
         <table class="table table-light">
           <thead>
             <tr>
@@ -48,6 +48,9 @@
               :key="'tbody-'+value.id"
             >
               <td>{{ value.nombre }}</td>
+              <td class="text-center">
+                <img :src="ruta+value.imagen" :alt="value.nombre" class="rounded-3">
+              </td>
               <td>
                 <ul>
                   <li 
@@ -58,6 +61,8 @@
                   </li>
                 </ul>
               </td>
+              <td>{{ value.stock }}</td>
+              <td>{{ formatearPrecio(value.precio) }}</td>
               <td class="text-center">
                 <span class="size-icon d-inline-block" @click="editar(value)">
                   <svg 
@@ -145,6 +150,14 @@ export default {
     editar(item){
       // this.ingrediente = item;
       this.showEdit = true;
+    },
+    formatearPrecio(precio) { 
+      return precio
+        .toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          minimumFractionDigits: 0,
+        })
     }
   },
   mounted() {
@@ -153,9 +166,9 @@ export default {
     
   },
   data() {
-    // data
-    const fields = ['Nombre', 'Ingredientes', 'Editar', 'Eliminar'];
+    const fields = ['Nombre', 'Imagen', 'Ingredientes', 'Stock', 'Precio', 'Editar', 'Eliminar'];
     const items = []
+    const ruta = this.$store.state.imgUrl
 
     return {
       showAdd: false,
@@ -164,6 +177,7 @@ export default {
       items,
       pizza: null,
       ingredientes: [],
+      ruta,
     }
   },
 }
@@ -188,5 +202,10 @@ export default {
     background-color: #fff;
     font-size: 20px;
     text-align: center;
+  }
+  .table img {
+    width: 6rem;
+    height: 6rem;
+    // width: 20px;
   }
 </style>
