@@ -13,6 +13,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import 'vue-next-select/dist/index.min.css';
 img {
   width: 100%;
 }

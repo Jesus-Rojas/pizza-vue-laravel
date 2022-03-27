@@ -55,9 +55,19 @@ const remove =  async (id) => {
   }
 }
 
+const all =  async () => {
+  try {
+    const respuesta = await fetch(`${ruta}/ingrediente/all`)
+    return await respuesta.json();
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export default {
   read,
   add,
   update,
   remove,
+  all,
 }
