@@ -11,7 +11,7 @@
     </template>
     <template v-slot:footer>
       <button class="btn btn-success me-2" @click="agregar">Agregar</button>
-      <button class="btn btn-danger" @click="hide">Cancelar</button>
+      <button class="btn btn-danger" @click="hide()">Cancelar</button>
     </template>
   </modal>
 </template>

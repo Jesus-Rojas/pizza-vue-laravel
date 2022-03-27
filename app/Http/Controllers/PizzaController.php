@@ -74,7 +74,6 @@ class PizzaController extends Controller
         try {
             $request->validate([
                 'nombre' => 'required',
-                'condicion' => 'required', // su funcion es modificar la imagen actual
                 'stock' => 'required',
                 'precio' => 'required',
                 'ingredientes' => 'required',
@@ -86,8 +85,8 @@ class PizzaController extends Controller
                     'status' => 'bad'
                 ]);
             }
-            $condicion = json_decode($request['condicion']);
-            if ($condicion && $request->hasFile('imagen')) {
+            
+            if ($request->hasFile('imagen')) {
                 $imagen = $request->file('imagen')->store('public/pizzas');
                 $imagen = Storage::url($imagen);
                 $pizza->update([
@@ -102,7 +101,8 @@ class PizzaController extends Controller
 
             $ingredientesNew = json_decode($request['ingredientes']);
             $ingredientesOld = IngredientePizza::where('pizzas_id', $id)->pluck('ingredientes_id');
-            $diferencia = array_diff($ingredientesNew, $ingredientesOld);
+            $ingredientesOld = json_decode(json_encode($ingredientesOld));
+            $diferencia = array_diff($ingredientesOld,$ingredientesNew);
             foreach ($diferencia as $value) {
                 $ingrediente = IngredientePizza::where([
                     ['pizzas_id', $id],
@@ -114,7 +114,11 @@ class PizzaController extends Controller
                 }
             }
             foreach ($ingredientesNew as $value) {
-                $ingrediente = IngredientePizza::find($value);
+                $ingrediente = IngredientePizza::where([
+                    ['pizzas_id', $id],
+                    ['ingredientes_id', $value]
+                ])
+                ->first();
                 if (!$ingrediente) {
                     IngredientePizza::create([
                         'ingredientes_id' => $value, 

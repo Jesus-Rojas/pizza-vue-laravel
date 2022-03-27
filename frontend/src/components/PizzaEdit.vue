@@ -4,7 +4,7 @@
     classCustom="size-modal-pizza"
   >
     <template v-slot:header>
-      <h3>Nueva Pizza</h3>
+      <h3>Editar Pizza</h3>
     </template>
     <template v-slot:body>
       <div class="row pb-4">
@@ -49,12 +49,13 @@
             mode="tags"
             class="w-75 mx-0"
             :options="options"
+            ref="multi"
           />
         </div>
       </div>
     </template>
     <template v-slot:footer>
-      <button class="btn btn-success me-2" @click="validar">Agregar</button>
+      <button class="btn btn-success me-2" @click="validar">Editar</button>
       <button class="btn btn-danger" @click="hide()">Cancelar</button>
     </template>
   </modal>
@@ -64,17 +65,37 @@
 import Modal from '@/utility/Modal';
 import api from '@/services/pizza';
 import Multiselect from '@vueform/multiselect'
+import { ref } from '@vue/reactivity';
 
 export default {
   components: {
     Modal,
     Multiselect,
   },
-  props: ['condicion','ingredientesOptions'],
+  props: ['condicion','ingredientesOptions','pizza'],
   watch: {
     ingredientesOptions(value){
       this.options = value;
-    }
+    },
+    pizza(value){
+      const { ingrediente_pizzas, nombre, stock, precio } = value
+      this.nombre = nombre
+      this.stock = stock
+      this.precio = precio
+      /* this.ingredientes = ingrediente_pizzas.map(data => {
+        return {
+          ...data.ingredientes
+        }
+      }) */
+      /* this.ingredientes = ingrediente_pizzas.map(data => {
+        return {
+          value: {
+            ...data.ingredientes
+          },
+          label: data.ingredientes.nombre
+        }
+      }) */
+    },
   },
   methods: {
     validar(){
@@ -90,31 +111,39 @@ export default {
         this.mensaje('El stock es requerido')
         return
       }
-      if (!this.imagen || this.imagen.value == '') {
-        this.mensaje('La imagen es requerida')
-        return
-      }
       if (this.ingredientes.length == 0) {
         this.mensaje('El campo ingredientes es requerido')
         return
       }
-      this.agregar()
+      this.editar()
     },
-    async agregar(){
-      let ingredientes = JSON.parse(JSON.stringify(this.ingredientes))
+    async editar(){
+      let ingredientesRaw = JSON.parse(JSON.stringify(this.ingredientes))
+      let ingredientes = [], tmp;
+      for (const iterator of ingredientesRaw) {
+        tmp = ingredientes.filter( data => data.id == iterator.id)
+        if (tmp.length == 0) {
+          ingredientes.push(iterator)
+        }
+      }
       ingredientes = ingredientes.map( data => data.id)
       const formData = new FormData()
       formData.append('nombre', this.nombre);
       formData.append('stock', this.stock);
       formData.append('precio', this.precio);
-      formData.append('imagen', this.imagen.files[0]);
+      formData.append('imagen', this.condicionImagen ? this.imagen.files[0] : '');
       formData.append('ingredientes', JSON.stringify(ingredientes));
-      const { mensaje, status } = await api.add(formData)
+      const { mensaje, status } = await api.update(formData, this.pizza.id)
       const type = status == 'ok' ? 'success' : 'danger';
       this.mensaje(mensaje,type)
       this.hide(true)
     },
     toggleImage({target}){
+      if (target.value == '') {
+        this.condicionImagen = false
+      } else {
+        this.condicionImagen = true
+      }
       this.imagen = {
         value: target.value,
         files: target.files,
@@ -135,6 +164,7 @@ export default {
     return {
       nombre: '',
       imagen: null,
+      condicionImagen: false,
       precio: null,
       stock: null,
       ingredientes:[],

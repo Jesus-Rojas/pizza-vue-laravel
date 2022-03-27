@@ -22,11 +22,12 @@
       :ingredientesOptions="ingredientes"
       @backdropEvent="messageAdd" 
     />
-    <!-- <Edit 
+    <Edit 
       :condicion="showEdit"
       :pizza="pizza"
+      :ingredientesOptions="ingredientes"
       @backdropEvent="messageEdit" 
-    /> -->
+    />
     
     <template v-if="items.length > 0">
       <div class="mx-2">
@@ -95,14 +96,14 @@
 
 <script>
 import Add from '@/components/PizzaAdd';
-// import Edit from '@/components/IngredienteEdit';
+import Edit from '@/components/PizzaEdit';
 import apiP from '@/services/pizza';
 import apiI from '@/services/ingrediente';
 
 export default {
   components: {
     Add,
-    // Edit,
+    Edit,
   },
   methods: {
     messageAdd(condicion){
@@ -148,7 +149,7 @@ export default {
       }
     },
     editar(item){
-      // this.ingrediente = item;
+      this.pizza = item;
       this.showEdit = true;
     },
     formatearPrecio(precio) { 

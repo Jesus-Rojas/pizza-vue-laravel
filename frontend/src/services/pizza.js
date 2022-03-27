@@ -25,12 +25,9 @@ const add =  async (datos) => {
 
 const update =  async (datos, id) => {
   try {
-    const respuesta = await fetch(`${ruta}/pizza/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(datos),
-      headers: {
-        'Content-Type': 'application/json'
-      }
+    const respuesta = await fetch(`${ruta}/pizza/${id}?_method=PUT`, {
+      method: 'POST',
+      body: datos
     })
     return await respuesta.json();
   } catch (error) {
