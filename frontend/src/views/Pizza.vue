@@ -30,7 +30,7 @@
     
     <template v-if="items.length > 0">
       <div class="mx-2">
-        <table class="table table-light">
+        <table class="table table-primary">
           <thead>
             <tr>
               <th
@@ -47,7 +47,7 @@
               v-for="(value) of items" 
               :key="'tbody-'+value.id"
             >
-              <td>{{ value.nombre }}</td>
+              <td class="text-center">{{ value.nombre }}</td>
               <td class="text-center">
                 <img :src="ruta+value.imagen" :alt="value.nombre" class="rounded-3">
               </td>
@@ -61,8 +61,8 @@
                   </li>
                 </ul>
               </td>
-              <td>{{ value.stock }}</td>
-              <td>{{ formatearPrecio(value.precio) }}</td>
+              <td class="text-center">{{ value.stock }}</td>
+              <td class="text-center">{{ formatearPrecio(value.precio) }}</td>
               <td class="text-center">
                 <span class="size-icon d-inline-block" @click="editar(value)">
                   <svg 
