@@ -31,7 +31,6 @@ export default {
     },
   },
   data(){
-    console.log(this.showHeader)
     return {
 			show: false,
     }
