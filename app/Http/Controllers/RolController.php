@@ -9,7 +9,7 @@ class RolController extends Controller
 {
     public function index()
     {
-        return response()->json(Rol::paginate());
+        return response()->json(Rol::paginate(10));
     }
 
     public function create()

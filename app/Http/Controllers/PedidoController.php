@@ -9,7 +9,7 @@ class PedidoController extends Controller
 {
     public function index()
     {
-        return response()->json(Pedido::with('detalle_pedidos.pizzas','users')->paginate());
+        return response()->json(Pedido::with('detalle_pedidos.pizzas','users')->paginate(10));
     }
 
     public function create()

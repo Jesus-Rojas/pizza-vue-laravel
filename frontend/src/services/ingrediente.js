@@ -30,7 +30,10 @@ const update =  async (datos, id) => {
   try {
     const respuesta = await fetch(`${ruta}/ingrediente/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(datos)
+      body: JSON.stringify(datos),
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
     return await respuesta.json();
   } catch (error) {
@@ -41,7 +44,10 @@ const update =  async (datos, id) => {
 const remove =  async (id) => {
   try {
     const respuesta = await fetch(`${ruta}/ingrediente/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
     return await respuesta.json();
   } catch (error) {

@@ -9,7 +9,7 @@ class IngredienteController extends Controller
 {
     public function index()
     {
-        return response()->json(Ingrediente::paginate());
+        return response()->json(Ingrediente::paginate(10));
     }
 
     public function create()
@@ -54,13 +54,45 @@ class IngredienteController extends Controller
         //
     }
 
-    public function update(Request $request, Ingrediente $ingrediente)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $ingrediente = Ingrediente::find($id);
+            if (!$ingrediente) {
+                return response()->json([
+                    'mensaje' => 'El registro no existe',
+                    'status' => 'bad'
+                ]);
+            }
+            $ingrediente->update([
+                'nombre' => $request['nombre']
+            ]);
+            return response()->json([
+                'mensaje' => 'Registro se actualizo con exito',
+                'status' => 'ok'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json($th);
+        }
     }
 
-    public function destroy(Ingrediente $ingrediente)
+    public function destroy($id)
     {
-        //
+        try {
+            $ingrediente = Ingrediente::find($id);
+            if (!$ingrediente) {
+                return response()->json([
+                    'mensaje' => 'El registro no existe',
+                    'status' => 'bad'
+                ]);
+            }
+            $ingrediente->delete();
+            return response()->json([
+                'mensaje' => 'Registro se elimino con exito',
+                'status' => 'ok'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json($th);
+        }
     }
 }

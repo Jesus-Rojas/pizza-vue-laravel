@@ -3,14 +3,14 @@
     v-if="condicion"
   >
     <template v-slot:header>
-      <h3>Nuevo Ingrediente</h3>
+      <h3>Editar Ingrediente</h3>
     </template>
     <template v-slot:body>
       <label class="me-4">Nombre: </label>
       <input type="text" class="w-50 " v-model="nombre">
     </template>
     <template v-slot:footer>
-      <button class="btn btn-success me-2" @click="agregar">Agregar</button>
+      <button class="btn btn-success me-2" @click="editar">Editar</button>
       <button class="btn btn-danger" @click="hide">Cancelar</button>
     </template>
   </modal>
@@ -19,20 +19,26 @@
 <script>
 import Modal from '@/utility/Modal';
 import api from '@/services/ingrediente';
-// import carrito from '@/assets/cart-shopping.svg';
 
 export default {
   components: {
     Modal
   },
-  props: ['condicion'],
+  props: ['condicion', 'ingrediente'],
+  watch:{
+    ingrediente(value){
+      if (value.nombre) {
+        this.nombre = value.nombre
+      }
+    }
+  },
   methods: {
-    async agregar(){
+    async editar(){
       if (this.nombre.length > 0) {
         const datos = {
           nombre: this.nombre
         };
-        const { mensaje, status } = await api.add(datos)
+        const { mensaje, status } = await api.update(datos, this.ingrediente.id)
         const type = status == 'ok' ? 'success' : 'danger';
         this.mensaje(mensaje,type)
         this.hide(true)

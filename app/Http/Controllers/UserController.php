@@ -9,7 +9,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        return response()->json(User::paginate());
+        return response()->json(User::paginate(10));
     }
 
     public function create()

@@ -9,7 +9,7 @@ class PizzaController extends Controller
 {
     public function index()
     {
-        return response()->json(Pizza::with('ingrediente_pizzas.ingredientes')->paginate());
+        return response()->json(Pizza::with('ingrediente_pizzas.ingredientes')->paginate(10));
     }
 
     public function create()
