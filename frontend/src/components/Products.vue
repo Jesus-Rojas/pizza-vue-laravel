@@ -56,7 +56,7 @@
       </div>
     </template>
     <template v-slot:footer>
-      <button class="btn btn-success me-2" @click="addCar">Agregar</button>
+      <button class="btn btn-success me-2" @click="validar">Agregar</button>
       <button class="btn btn-danger" @click="hide()">Cancelar</button>
     </template>
   </modal>
@@ -65,6 +65,7 @@
 <script>
 import api from '@/services/pizza.js'
 import { ref } from '@vue/reactivity'
+import { mapState } from 'vuex'
 import store from "@/store";
 import Product from "@/components/Product";
 import Modal from "@/utility/Modal";
@@ -74,14 +75,44 @@ export default {
     Product,
     Modal,
   },
+  computed: {
+    ...mapState(['carrito']),
+  },
   methods: {
+    validar(){
+      if (!this.cantidad || this.cantidad < 0) {
+        this.mensaje('La cantidad es requerido')
+        return
+      }
+      if (this.cantidad > this.disponible) {
+        this.mensaje(`La cantidad debe ser menor o igual a ${this.disponible}`)
+        return
+      }
+      this.addCar()
+    },
+    mensaje(message = '', type = 'error'){
+      this.$toast.open({
+        message,
+        type,
+        duration: 1500,
+      });
+    },
     addModal(pizza){
-      this.pizza = pizza
-      this.disponible = 0
+      let disponible;
+      const filtro = this.carrito.filter( data => data.id == pizza.id)
+      if (filtro.length > 0) {
+        disponible = pizza.stock - filtro[0].cantidad
+        if (disponible <= 0) {
+          this.mensaje('Esta pizza no tiene unidades disponibles verfica en el carrito', 'warning')
+          return
+        }
+      } else {
+        disponible = pizza.stock
+      }
+      this.disponible = disponible
       this.cantidad = 0
+      this.pizza = pizza
       this.condicionModal = true
-      
-      console.log(pizza)
     },
     async consultarApi(){
       const { data } = await api.read()
@@ -91,7 +122,19 @@ export default {
       this.condicionModal = false
     },
     addCar(){
-      //
+      let cantidad = 0;
+      let carrito = this.carrito.filter( data => data.id !== this.pizza.id )
+      const filtro = this.carrito.filter( data => data.id === this.pizza.id )
+      if (filtro.length > 0) {
+        cantidad = filtro[0].cantidad
+      }
+      carrito.push({
+        ...this.pizza,
+        cantidad: this.cantidad + cantidad,
+      })
+      this.disponible = this.pizza.stock - (this.cantidad + cantidad)
+      this.$store.commit('setCarrito', carrito)
+      this.hide();
     }
   },
   mounted(){
@@ -102,6 +145,7 @@ export default {
       items: [],
       pizza: null,
       cantidad: 0,
+      disponible: 0,
       condicionModal: false,
       ruta: this.$store.state.imgUrl
     }
