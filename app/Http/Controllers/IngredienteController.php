@@ -12,6 +12,11 @@ class IngredienteController extends Controller
         return response()->json(Ingrediente::paginate(10));
     }
 
+    public function all()
+    {
+        return response()->json(Ingrediente::all());
+    }
+
     public function create()
     {
         //
