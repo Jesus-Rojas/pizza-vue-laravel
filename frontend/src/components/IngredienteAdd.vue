@@ -6,8 +6,14 @@
       <h3>Nuevo Ingrediente</h3>
     </template>
     <template v-slot:body>
-      <label class="me-4">Nombre: </label>
-      <input type="text" class="w-50 " v-model="nombre">
+      <div class="row">
+        <div class="col-4 align-self-center">
+          Nombre: 
+        </div>
+        <div class="col-8 text-start">
+          <input type="text" class="w-75 form-control" v-model="nombre">
+        </div>
+      </div>
     </template>
     <template v-slot:footer>
       <button class="btn btn-success me-2" @click="agregar">Agregar</button>

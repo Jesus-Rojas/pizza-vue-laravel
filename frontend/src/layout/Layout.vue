@@ -23,6 +23,13 @@
           >
             Ingrediente
           </router-link>
+          <hr class="text-white" />
+          <router-link 
+            class="d-block text-white fs-5"
+            :to="{ name: 'home' }"
+          >
+            Regresar
+          </router-link>
         </nav>
       </div>
     </div>

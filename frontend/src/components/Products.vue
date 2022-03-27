@@ -7,65 +7,110 @@
       <div class="blog-slider wow fadeInUp">
         <div class="blog-slider-inner">
           <div class="row">
-            <div 
-              class="colxl-5 col-lg-5 col-md-5 card my-2 mx-auto" 
+            <Product 
               v-for="value in items" 
               :key="value.id+'-pizza'"
-            >
-              <div class="row">
-                <div class="col-5 pt-3">
-                  <img :src="ruta+value.imagen" :alt="value.nombre" class="rounded custom-pizza d-block">
-                  <p class="pt-3 text-primary">{{ value.nombre }}</p>
-                </div>
-                <div class="col-7">
-                  <span class="text-warning pt-3 d-block">Ingredientes:</span>
-                  <ul>
-                    <li 
-                      v-for="item in value.ingrediente_pizzas"
-                      :key="item.id+'-ingredientes'"
-                    >
-                      {{ item.ingredientes.nombre }}
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+              :product="value"
+              @backdropEvent="addModal"
+            />
           </div>
         </div>
       </div>
     </div>
   </section>
+  <modal
+    v-if="condicionModal"
+    classCustom="size-modal-addCar"
+    :showHeader="false"
+  >
+    <template v-slot:body>
+      <h3 class="text-center py-2">{{ pizza.nombre }}</h3>
+      <div class="row py-2">
+        <img :src="ruta+pizza.imagen" :alt="pizza.nombre" class="rounded w-auto custom-pizza mx-auto d-block">
+      </div>
+      <div class="row py-2">
+        <div class="col-4">
+          Disponible: 
+        </div>
+        <div class="col-8 text-start">
+          {{ disponible }}
+        </div>
+      </div>
+      <div class="row py-2">
+        <div class="col-4">
+          Descripcion: 
+        </div>
+        <div class="col-8 text-start">
+          <p>
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eius ad corporis voluptas ab minima quas hic! Eligendi corporis libero vero ab, illum voluptate repellendus modi voluptas. Voluptatem nostrum fugiat ullam.
+          </p>
+        </div>
+      </div>
+      <div class="row pb-4">
+        <div class="col-4 align-self-center">
+          Cantidad: 
+        </div>
+        <div class="col-8 text-start">
+          <input type="number" class="w-75 form-control" v-model="cantidad">
+        </div>
+      </div>
+    </template>
+    <template v-slot:footer>
+      <button class="btn btn-success me-2" @click="addCar">Agregar</button>
+      <button class="btn btn-danger" @click="hide()">Cancelar</button>
+    </template>
+  </modal>
 </template>
 
 <script>
 import api from '@/services/pizza.js'
 import { ref } from '@vue/reactivity'
 import store from "@/store";
+import Product from "@/components/Product";
+import Modal from "@/utility/Modal";
 
 export default {
-  setup() {
-    const items = ref([])
-    const consultarApi = async () => {
+  components: {
+    Product,
+    Modal,
+  },
+  methods: {
+    addModal(pizza){
+      this.pizza = pizza
+      this.disponible = 0
+      this.cantidad = 0
+      this.condicionModal = true
+      
+      console.log(pizza)
+    },
+    async consultarApi(){
       const { data } = await api.read()
-      items.value = data
+      this.items = data
+    },
+    hide(){
+      this.condicionModal = false
+    },
+    addCar(){
+      //
     }
-    consultarApi();
+  },
+  mounted(){
+    this.consultarApi();
+  },
+  data() {
     return {
-      items,
-      ruta: store.state.imgUrl
+      items: [],
+      pizza: null,
+      cantidad: 0,
+      condicionModal: false,
+      ruta: this.$store.state.imgUrl
     }
   },
 }
 </script>
 
 <style lang="scss" scoped>
-  /*----- Blog Section Css -----*/
-  .card {
-    border: solid 1px #000;
-    
-  }
-  .custom-pizza {
-    height: 8rem;
-  }
-  /*----- Blog Section Css End -----*/
+.custom-pizza{
+  height: 8rem;
+}
 </style>

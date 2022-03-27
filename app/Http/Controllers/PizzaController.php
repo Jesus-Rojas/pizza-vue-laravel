@@ -90,7 +90,7 @@ class PizzaController extends Controller
                 $imagen = $request->file('imagen')->store('public/pizzas');
                 $imagen = Storage::url($imagen);
                 $pizza->update([
-                    'imagen' => $request['imagen']
+                    'imagen' => $imagen
                 ]);
             }
             $pizza->update([

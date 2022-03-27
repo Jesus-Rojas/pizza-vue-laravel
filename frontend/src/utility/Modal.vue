@@ -2,7 +2,7 @@
   <Transition name="fade">
     <div class="modal-backdrop">
       <div class="modal-container" :class="classCustom">
-        <div class="header-modal">
+        <div class="header-modal" v-if="showHeader">
           <slot name="header"></slot>
         </div>
         <div class="body-modal">
@@ -20,13 +20,20 @@
 import { ref } from '@vue/reactivity';
 
 export default {
-  props: [
-    'classCustom'
-  ],
-  setup(){
-    const show = ref(false);
+  props: {
+    classCustom: {
+      type: String,
+      default: ''
+    },
+    showHeader: {
+      type: Boolean,
+      default: true
+    },
+  },
+  data(){
+    console.log(this.showHeader)
     return {
-			show,
+			show: false,
     }
   }
 }
@@ -69,6 +76,10 @@ export default {
 }
 
 .size-modal-pizza {
-  height: 70%;
+  height: 75%;
+}
+
+.size-modal-addCar {
+  height: 80%;
 }
 </style>

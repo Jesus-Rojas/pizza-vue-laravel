@@ -8,39 +8,39 @@
     </template>
     <template v-slot:body>
       <div class="row pb-4">
-        <div class="col-4">
+        <div class="col-4 align-self-center">
           Nombre: 
         </div>
         <div class="col-8 text-start">
-          <input type="text" class="w-75 " v-model="nombre">
+          <input type="text" class="w-75 form-control" v-model="nombre">
         </div>
       </div>
       <div class="row pb-4">
-        <div class="col-4">
+        <div class="col-4 align-self-center">
           Precio: 
         </div>
         <div class="col-8 text-start">
-          <input type="number" class="w-75 " v-model="precio">
+          <input type="number" class="w-75 form-control" v-model="precio">
         </div>
       </div>
       <div class="row pb-4">
-        <div class="col-4">
+        <div class="col-4 align-self-center">
           Stock: 
         </div>
         <div class="col-8 text-start">
-          <input type="number" class="w-75 " v-model="stock">
+          <input type="number" class="w-75 form-control" v-model="stock">
         </div>
       </div>
       <div class="row pb-4">
-        <div class="col-4">
+        <div class="col-4 align-self-center">
           Imagen: 
         </div>
         <div class="col-8 text-start">
-          <input type="file" accept="image/*" class="w-75 " @change="toggleImage">
+          <input type="file" accept="image/*" class="w-75 form-control" @change="toggleImage">
         </div>
       </div>
       <div class="row">
-        <div class="col-4">
+        <div class="col-4 align-self-center">
           Ingredientes: 
         </div>
         <div class="col-8">

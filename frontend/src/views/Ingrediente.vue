@@ -29,7 +29,7 @@
     
     <template v-if="items.length > 0">
       <div class="w-75 mx-auto">
-        <table class="table table-light">
+        <table class="table table-primary">
           <thead>
             <tr>
               <th
