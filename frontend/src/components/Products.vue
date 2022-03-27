@@ -64,7 +64,6 @@
 
 <script>
 import api from '@/services/pizza.js'
-import { ref } from '@vue/reactivity'
 import { mapState } from 'vuex'
 import Product from "@/components/Product";
 import Modal from "@/utility/Modal";
@@ -109,7 +108,7 @@ export default {
         disponible = pizza.stock
       }
       this.disponible = disponible
-      this.cantidad = 0
+      this.cantidad = 1
       this.pizza = pizza
       this.condicionModal = true
     },
@@ -129,7 +128,7 @@ export default {
       }
       carrito.push({
         ...this.pizza,
-        cantidad: this.cantidad + cantidad,
+        cantidad: this.cantidad + cantidad
       })
       this.disponible = this.pizza.stock - (this.cantidad + cantidad)
       this.$store.commit('setCarrito', carrito)

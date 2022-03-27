@@ -196,14 +196,6 @@ export default {
   .trash-icon {
     fill: rgb(145, 12, 19);
   }
-  .modal {
-    width: 300px;
-    padding: 30px;
-    box-sizing: border-box;
-    background-color: #fff;
-    font-size: 20px;
-    text-align: center;
-  }
   .table img {
     width: 6rem;
     height: 6rem;

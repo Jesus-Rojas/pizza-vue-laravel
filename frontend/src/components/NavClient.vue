@@ -43,6 +43,8 @@
 			</div>
 		</div>
 	</header>
+	<div class="pb-custom"/>
+	<router-view />
 </template>
 
 <script>
@@ -122,5 +124,7 @@ export default {
 			}
 		}
 	}
-	
+	.pb-custom{
+    height: 123px;
+  }
 </style>
