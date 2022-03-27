@@ -26,7 +26,7 @@
     <template v-slot:body>
       <h3 class="text-center py-2">{{ pizza.nombre }}</h3>
       <div class="row py-2">
-        <img :src="ruta+pizza.imagen" :alt="pizza.nombre" class="rounded w-auto custom-pizza mx-auto d-block">
+        <img :src="imgUrl+pizza.imagen" :alt="pizza.nombre" class="rounded w-auto custom-pizza mx-auto d-block">
       </div>
       <div class="row py-2">
         <div class="col-4">
@@ -66,7 +66,6 @@
 import api from '@/services/pizza.js'
 import { ref } from '@vue/reactivity'
 import { mapState } from 'vuex'
-import store from "@/store";
 import Product from "@/components/Product";
 import Modal from "@/utility/Modal";
 
@@ -76,7 +75,7 @@ export default {
     Modal,
   },
   computed: {
-    ...mapState(['carrito']),
+    ...mapState(['carrito','imgUrl']),
   },
   methods: {
     validar(){
@@ -147,7 +146,6 @@ export default {
       cantidad: 0,
       disponible: 0,
       condicionModal: false,
-      ruta: this.$store.state.imgUrl
     }
   },
 }

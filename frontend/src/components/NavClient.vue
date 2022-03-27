@@ -4,7 +4,9 @@
 			<div class="row">
 				<div class="col-xl-3 col-lg-3 col-md-3 display-flex flex-center">
 					<div class="header-logo transition pt-4">
-						<a href="index.html"><img :src="logo" alt="Restaurano Logo"></a>
+						<router-link :to="{ name: 'home'}">
+							<img :src="logo" alt="Restaurano Logo">
+						</router-link>
 					</div>
 				</div>
 				<div class="col-xl-9 col-lg-9 col-md-9 display-flex flex-center justify-right">
@@ -17,7 +19,7 @@
 								<a href="#">Jesus Rojas</a>
 							</li>
 							<li>
-								<div class="position-relative">
+								<div class="position-relative" @click="$router.push({ name: 'checkout'})">
 									<span 
 										v-if="this.carrito.length > 0"
 										class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
