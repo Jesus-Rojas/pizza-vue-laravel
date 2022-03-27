@@ -20,3 +20,13 @@ Route::get('/', function () {
 Route::get('/about', function () {
     return view('welcome');
 });
+
+Route::get('/dashboard', function () {
+    return view('welcome');
+});
+
+Route::get('/dashboard/ingrediente', function () {
+    return view('welcome');
+});
+
+

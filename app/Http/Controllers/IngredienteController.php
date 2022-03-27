@@ -19,7 +19,29 @@ class IngredienteController extends Controller
 
     public function store(Request $request)
     {
-        //
+        try {
+            $request->validate([
+                'nombre' => 'required',
+            ]);
+            // return response()->json($request->all());
+            $ingrediente = Ingrediente::create([
+                'nombre' => $request['nombre']
+            ]);
+    
+            if ($ingrediente->save()) {
+                return response()->json([
+                    'mensaje' => 'Se creo registro con exito',
+                    'status' => 'ok'
+                ]);
+            }
+    
+            return response()->json([
+                'mensaje' => 'problemas en el servidor verificar',
+                'status' => 'bad'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json($th);
+        }
     }
 
     public function show(Ingrediente $ingrediente)

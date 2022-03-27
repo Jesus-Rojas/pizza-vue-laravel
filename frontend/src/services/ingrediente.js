@@ -11,11 +11,14 @@ const read =  async () => {
   }
 }
 
-const add =  async () => {
+const add =  async (datos) => {
   try {
     const respuesta = await fetch(`${ruta}/ingrediente`, {
       method: 'POST',
-      body: JSON.stringify(datos)
+      body: JSON.stringify(datos),
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
     return await respuesta.json();
   } catch (error) {

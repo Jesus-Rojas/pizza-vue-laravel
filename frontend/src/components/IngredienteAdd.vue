@@ -26,7 +26,6 @@
 </template>
 
 <script>
-import { ref } from '@vue/reactivity'
 import Modal from '@/utility/Modal';
 import api from '@/services/ingrediente';
 // import carrito from '@/assets/cart-shopping.svg';
@@ -37,15 +36,14 @@ export default {
   },
   methods: {
     async agregar(){
-      console.log(this)
       if (this.nombre.length > 0) {
         const datos = {
           nombre: this.nombre
-        }
-        let respuesta = await api.add(datos)
-        respuesta = await respuesta.json()
-        console.log(respuesta)
-        this.mensaje('Creacion de registro con exito','success')
+        };
+        const { mensaje, status } = await api.add(datos)
+        const type = status == 'ok' ? 'success' : 'danger';
+        this.mensaje(mensaje,type)
+        this.hide()
         return
       }
       this.mensaje('El campo nombre es requerido')
@@ -63,7 +61,7 @@ export default {
   },
   data(){
     return {
-      show: true,
+      show: false,
       nombre: '',
     }
   }
