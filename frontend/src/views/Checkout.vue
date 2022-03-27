@@ -62,7 +62,7 @@
           </span>
           <button 
             class="btn btn-warning rounded mx-4"
-            @click="pagar"
+            @click="validarCheckout"
           >Pagar</button>
         </div>
       </template>
@@ -70,11 +70,19 @@
   </section>
   <modal
     v-if="condicionModal"
-    classCustom='size-modal-login'
+    :classCustom="titulo == 'Login' ? 'size-modal-login' : 'size-modal-register'"
     :showHeader="false"
   >
     <template v-slot:body>
       <h3 class="text-center py-2">{{ titulo }}</h3>
+      <div class="row pb-2" v-if="titulo != 'Login'">
+        <div class="col-4 align-self-center">
+          Nombre: 
+        </div>
+        <div class="col-8 text-start">
+          <input type="text" class="w-75 form-control" v-model="name">
+        </div>
+      </div>
       <div class="row pb-2">
         <div class="col-4 align-self-center">
           Correo: 
@@ -91,9 +99,14 @@
           <input type="password" class="w-75 form-control" v-model="password">
         </div>
       </div>
-      <span class="text-center text-info d-block py-2 cursor-pointer">
-        {{ titulo == 'Login' ? 'Registrarse' : 'Loguearse' }} ?
-      </span>
+      <div class="py-2 text-center text-info">
+        <span 
+          class="cursor-pointer" 
+          @click="titulo = titulo == 'Login' ? 'Registrarse' : 'Login'"
+        >
+          {{ titulo == 'Login' ? 'Registrarse' : 'Login' }} ?
+        </span>
+      </div>
     </template>
     <template v-slot:footer>
       <button 
@@ -116,7 +129,8 @@
 </template>
 
 <script>
-import api from '@/services/pizza.js'
+import apiU from '@/services/user.js'
+import apiP from '@/services/pedido.js'
 import { mapState } from 'vuex'
 import Product from "@/components/Product";
 import Modal from "@/utility/Modal";
@@ -170,14 +184,29 @@ export default {
     formatearPrecio(value){
       return utility.formatearPrecio(value)
     },
-    pagar(){
+    async pagar(){
+      let carrito = this.carrito.map( ({ cantidad, precio, id }) => {
+        return {
+          cantidad, 
+          precio_unitario: precio, // se puede hacer en backend para restringir el precio, tengo dudas en caso de un descuento por eso lo dejo desde frontend
+          pizzas_id: id,
+        }
+      })
+      const datos = {
+        token: localStorage.getItem('token'),
+        valor_total: this.totalCarrito,
+        pedido: carrito,
+      };
+      const respuesta = await apiP.add(datos)
+      console.log(respuesta)
+    },
+    validarCheckout(){
       const token = localStorage.getItem('access_token')
       if (token) {
-        // pagarApi
-      } else {
-        // autenticacion
-        this.condicionModal = true
+        this.pagar()
+        return
       }
+      this.condicionModal = true
     },
     mensaje(message = '', type = 'error'){
       this.$toast.open({
@@ -187,10 +216,54 @@ export default {
       });
     },
     login(){
-      //
+      const condicion = this.validar()
+      if (condicion) {
+        const datos = {
+          email: this.email,
+          password: this.password,
+        }
+        console.log(datos)
+      }
     },
-    register(){
-      //
+    validar(condicion = false){
+      if (condicion) {
+        if (!this.name) {
+          this.mensaje('El nombre es requerido')
+          return
+        }
+      }
+      if (!this.email) {
+        this.mensaje('El correo es requerido')
+        return
+      }
+      if (!this.validarEmail.test(this.email)) {
+        this.mensaje('El correo no es valido')
+        return
+      }
+      if (!this.password) {
+        this.mensaje('La contraseña es requerida')
+        return
+      }
+      return true
+    },
+    async register(){
+      const condicion = this.validar(true)
+      if (condicion) {
+        const datos = {
+          email: this.email,
+          password: this.password,
+          name: this.name,
+        }
+        const { status, mensaje, token } = await apiU.register(datos);
+        if (status == 'ok') {
+          localStorage.setItem('token', token)
+          this.mensaje(mensaje, 'success')
+          this.condicionModal = false;
+          this.pagar()
+          return
+        }
+        this.mensaje(mensaje)
+      }
     },
     hide(){
       this.condicionModal = false
@@ -198,12 +271,15 @@ export default {
   },
   data() {
     const fields = ['Nombre', 'Imagen', 'Precio', 'Cantidad', 'Total'];
+    const validarEmail = /^[\w\._]{5,30}\+?[\w]{0,10}@[\w\.\-]{3,}\.\w{2,5}$/i;
     return {
       fields,
+      name: '',
       email: '',
       password: '',
       condicionModal: false,
       titulo: 'Login',
+      validarEmail
     }
   },
 }

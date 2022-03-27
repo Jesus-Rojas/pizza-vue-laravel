@@ -17,11 +17,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/about', function () {
+Route::get('/checkout', function () {
     return view('welcome');
 });
 
 Route::get('/dashboard', function () {
+    return view('welcome');
+});
+
+Route::get('/dashboard/pizza', function () {
     return view('welcome');
 });
 

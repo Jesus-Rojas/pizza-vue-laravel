@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -42,10 +43,7 @@ class UserController extends Controller
             'email' => 'required',
             'name' => 'required',
         ]);
-        $user = User::create([
-            'email' => $request['email'],
-        ])
-        ->first();
+        $user = User::where('email', $request['email'])->first();
         if ($user) {
             return response()->json([
                 'status' => 'bad',
@@ -53,14 +51,16 @@ class UserController extends Controller
             ]);
         }
         $user = User::create([
-            'password' => $request['password'],
+            'password' => Hash::make($request['password']),
             'email' => $request['email'],
             'name' => $request['name'],
+            'roles_id' => 2,
         ]);
         if (!$user) {
             return response()->json([
                 'status' => 'bad',
                 'mensaje' => 'Error en el servidor',
+                'token' => $request['email'],
             ]);
         }
         return response()->json([

@@ -82,6 +82,10 @@ export default {
   height: 45%;
 }
 
+.size-modal-register {
+  height: 50%;
+}
+
 .size-modal-addCar {
   height: 80%;
 }
