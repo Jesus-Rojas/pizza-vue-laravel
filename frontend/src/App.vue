@@ -20,4 +20,7 @@ img {
 a {
   text-decoration: none;
 }
+.cursor-pointer {
+  cursor: pointer;
+}
 </style>

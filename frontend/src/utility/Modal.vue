@@ -78,6 +78,10 @@ export default {
   height: 75%;
 }
 
+.size-modal-login {
+  height: 45%;
+}
+
 .size-modal-addCar {
   height: 80%;
 }

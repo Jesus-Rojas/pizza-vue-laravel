@@ -3,11 +3,10 @@
     <div class="w-25 bg-blue-900 px-5 py-10">
       <div class="position-fixed">
         <h2 class="text-4xl font-black text-white text-center">Administracion</h2>
-        <nav class="mt-10">
+        <nav class="mt-10 text-center">
           <router-link 
             class="d-block text-white fs-5"
             :to="{ name: 'dashboard' }"
-
           >
             Dashboard
           </router-link>

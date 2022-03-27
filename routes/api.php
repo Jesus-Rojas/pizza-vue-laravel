@@ -23,9 +23,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('login', [UserController::class, 'login']);
+Route::post('register', [UserController::class, 'register']);
+
 Route::resource('pizza', PizzaController::class);
 Route::get('ingrediente/all', [IngredienteController::class, 'all']);
 Route::resource('ingrediente', IngredienteController::class);
 Route::resource('pedido', PedidoController::class);
 Route::resource('rol', RolController::class);
 Route::resource('user', UserController::class);
+

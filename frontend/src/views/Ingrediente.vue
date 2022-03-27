@@ -35,6 +35,7 @@
               <th
                 v-for="(value, index) of fields" 
                 :key="'thead-'+index"
+                class="text-center"
               >
                 {{value}}
               </th>
@@ -45,8 +46,8 @@
               v-for="(value, index) of items" 
               :key="'tbody-'+index"
             >
-              <td>{{ value.nombre }}</td>
-              <td>
+              <td class="text-center">{{ value.nombre }}</td>
+              <td class="text-center">
                 <span class="size-icon d-inline-block" @click="editar(value)">
                   <svg 
                     class="edit-icon"
@@ -57,7 +58,7 @@
                   </svg>
                 </span>
               </td>
-              <td>
+              <td class="text-center">
                 <span class="size-icon d-inline-block" @click="eliminar(value.id)">
                   <svg 
                     class="trash-icon"

@@ -28,7 +28,6 @@ class IngredienteController extends Controller
             $request->validate([
                 'nombre' => 'required',
             ]);
-            // return response()->json($request->all());
             $ingrediente = Ingrediente::create([
                 'nombre' => $request['nombre']
             ]);

@@ -55,49 +55,62 @@
             </tbody>
           </table>
         </div>
+        <div class="text-end py-3">
+          <span class="me-3">
+            Valor Total: 
+            <b class="ms-2">{{ formatearPrecio(totalCarrito) }}</b>
+          </span>
+          <button 
+            class="btn btn-warning rounded mx-4"
+            @click="pagar"
+          >Pagar</button>
+        </div>
       </template>
     </div>
   </section>
   <modal
     v-if="condicionModal"
-    classCustom="size-modal-addCar"
+    classCustom='size-modal-login'
     :showHeader="false"
   >
     <template v-slot:body>
-      <h3 class="text-center py-2">{{ pizza.nombre }}</h3>
-      <div class="row py-2">
-        <img :src="imgUrl+pizza.imagen" :alt="pizza.nombre" class="rounded w-auto custom-pizza mx-auto d-block">
-      </div>
-      <div class="row py-2">
-        <div class="col-4">
-          Disponible: 
-        </div>
-        <div class="col-8 text-start">
-          {{ disponible }}
-        </div>
-      </div>
-      <div class="row py-2">
-        <div class="col-4">
-          Descripcion: 
-        </div>
-        <div class="col-8 text-start">
-          <p>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eius ad corporis voluptas ab minima quas hic! Eligendi corporis libero vero ab, illum voluptate repellendus modi voluptas. Voluptatem nostrum fugiat ullam.
-          </p>
-        </div>
-      </div>
-      <div class="row pb-4">
+      <h3 class="text-center py-2">{{ titulo }}</h3>
+      <div class="row pb-2">
         <div class="col-4 align-self-center">
-          Cantidad: 
+          Correo: 
         </div>
         <div class="col-8 text-start">
-          <input type="number" class="w-75 form-control" v-model="cantidad">
+          <input type="email" class="w-75 form-control" v-model="email">
         </div>
       </div>
+      <div class="row pb-2">
+        <div class="col-4 align-self-center">
+          Contraseña: 
+        </div>
+        <div class="col-8 text-start">
+          <input type="password" class="w-75 form-control" v-model="password">
+        </div>
+      </div>
+      <span class="text-center text-info d-block py-2 cursor-pointer">
+        {{ titulo == 'Login' ? 'Registrarse' : 'Loguearse' }} ?
+      </span>
     </template>
     <template v-slot:footer>
-      <button class="btn btn-success me-2" @click="validar">Agregar</button>
-      <button class="btn btn-danger" @click="hide()">Cancelar</button>
+      <button 
+        v-if="titulo == 'Login'"
+        class="btn btn-success me-2"
+        @click="login"
+      >
+        Iniciar Sesion
+      </button>
+      <button 
+        v-else
+        class="btn btn-success me-2"
+        @click="register"
+      >
+        Registrarse
+      </button>
+      <button class="btn btn-danger" @click="hide">Salir</button>
     </template>
   </modal>
 </template>
@@ -116,6 +129,13 @@ export default {
   },
   computed: {
     ...mapState(['carrito','imgUrl']),
+    totalCarrito(){
+      let total = 0
+      for (const iterator of this.carrito) {
+        total += (iterator.cantidad * iterator.precio)
+      }
+      return total
+    }
   },
   methods: {
     decrement(value){
@@ -150,16 +170,14 @@ export default {
     formatearPrecio(value){
       return utility.formatearPrecio(value)
     },
-    validar(){
-      if (!this.cantidad || this.cantidad < 0) {
-        this.mensaje('La cantidad es requerido')
-        return
+    pagar(){
+      const token = localStorage.getItem('access_token')
+      if (token) {
+        // pagarApi
+      } else {
+        // autenticacion
+        this.condicionModal = true
       }
-      if (this.cantidad > this.disponible) {
-        this.mensaje(`La cantidad debe ser menor o igual a ${this.disponible}`)
-        return
-      }
-      this.addCar()
     },
     mensaje(message = '', type = 'error'){
       this.$toast.open({
@@ -168,60 +186,24 @@ export default {
         duration: 1500,
       });
     },
-    addModal(pizza){
-      let disponible;
-      const filtro = this.carrito.filter( data => data.id == pizza.id)
-      if (filtro.length > 0) {
-        disponible = pizza.stock - filtro[0].cantidad
-        if (disponible <= 0) {
-          this.mensaje('Esta pizza no tiene unidades disponibles verfica en el carrito', 'warning')
-          return
-        }
-      } else {
-        disponible = pizza.stock
-      }
-      this.disponible = disponible
-      this.cantidad = 0
-      this.pizza = pizza
-      this.condicionModal = true
+    login(){
+      //
     },
-    async consultarApi(){
-      const { data } = await api.read()
-      this.items = data
+    register(){
+      //
     },
     hide(){
       this.condicionModal = false
     },
-    addCar(){
-      let cantidad = 0;
-      let carrito = this.carrito.filter( data => data.id !== this.pizza.id )
-      const filtro = this.carrito.filter( data => data.id === this.pizza.id )
-      if (filtro.length > 0) {
-        cantidad = filtro[0].cantidad
-      }
-      carrito = JSON.parse(JSON.stringify(carrito))
-      carrito.push({
-        ...this.pizza,
-        cantidad: this.cantidad + cantidad,
-      })
-      this.disponible = this.pizza.stock - (this.cantidad + cantidad)
-      this.$store.commit('setCarrito', carrito)
-      this.hide();
-    }
-  },
-  mounted(){
-    // this.consultarApi();
-    console.log(this.carrito)
   },
   data() {
     const fields = ['Nombre', 'Imagen', 'Precio', 'Cantidad', 'Total'];
     return {
       fields,
-      items: [],
-      pizza: null,
-      cantidad: 0,
-      disponible: 0,
+      email: '',
+      password: '',
       condicionModal: false,
+      titulo: 'Login',
     }
   },
 }
