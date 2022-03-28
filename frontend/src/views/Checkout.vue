@@ -197,10 +197,30 @@ export default {
         venta_total: this.totalCarrito,
         pedido: carrito,
       };
-      const { mensaje } = await apiP.add(datos)
-      this.mensaje(mensaje, 'success')
-      this.$store.commit('setCarrito', [])
-      this.$router.push({ name: 'home'});
+      const { mensaje, status, pizza } = await apiP.add(datos)
+      if ('success' == status) {
+        this.$store.commit('setCarrito', [])
+        this.$router.push({ name: 'home'});
+        this.mensaje(mensaje, 'success')
+        return
+      }
+      if ('verificar' == status) {
+        carrito = this.carrito.filter(data => data.id !== pizza.id)
+        if (pizza.cantidad > 0) {
+          const pizzaOld = this.carrito.filter(data => data.id === pizza.id)[0]
+          this.$store.commit('setCarrito', [
+            ...carrito,
+            {
+              ...pizzaOld,
+              cantidad: pizza.cantidad,
+              stock: pizza.stock,
+            }
+          ])
+        } else {
+          this.$store.commit('setCarrito', carrito)
+        }
+      }
+      this.mensaje(mensaje, 'danger')
     },
     validarCheckout(){
       const token = localStorage.getItem('access_token')

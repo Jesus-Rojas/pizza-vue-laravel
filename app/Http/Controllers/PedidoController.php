@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Jobs\SendEmail;
 use App\Models\DetallePedido;
 use App\Models\Pedido;
+use App\Models\Pizza;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PedidoController extends Controller
 {
@@ -28,6 +30,7 @@ class PedidoController extends Controller
                 'pedido' => 'required',
                 'venta_total' => 'required',
             ]);
+            DB::transaction();
             // temporal user
             $user = User::where('email', $request['token'])->first();
             $pedido = Pedido::create([
@@ -36,6 +39,18 @@ class PedidoController extends Controller
             ]);
             foreach ($request['pedido'] as $value) {
                 // pendiente restar stock
+                $pizza = Pizza::find($value['pizzas_id']);
+                if ($value['cantidad'] > $pizza->cantidad ) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => 'verificar',
+                        'mensaje' => 'Algunos productos no tienen stock',
+                        'pizza' => [
+                            'id' => $pizza->id,
+                            'cantidad' => $pizza->stock,
+                        ]
+                    ]);
+                }
                 DetallePedido::create([
                     'cantidad' => $value['cantidad'],
                     'precio_unitario' => $value['precio_unitario'],
@@ -43,6 +58,7 @@ class PedidoController extends Controller
                     'pedidos_id' => $pedido->id,
                 ]);
             }
+            DB::commit();
             // consulto de nuevo para traer todas sus relaciones, me facilito trabajo en el blade
             $pedido = Pedido::where('id', $pedido->id)->with('detalle_pedidos.pizzas')->first();
             $details = [
@@ -57,6 +73,7 @@ class PedidoController extends Controller
                 'mensaje' => 'El pedido se creo con exito',
             ]);
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json($th);
         }
     }
