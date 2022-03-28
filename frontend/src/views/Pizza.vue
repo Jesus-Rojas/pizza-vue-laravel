@@ -50,7 +50,7 @@
             >
               <td class="text-center">{{ value.nombre }}</td>
               <td class="text-center">
-                <img :src="ruta+value.imagen" :alt="value.nombre" class="rounded-3">
+                <img :src="imgUrl+value.imagen" :alt="value.nombre" class="rounded-3">
               </td>
               <td>
                 <ul>
@@ -99,8 +99,12 @@ import Add from '@/components/PizzaAdd';
 import Edit from '@/components/PizzaEdit';
 import apiP from '@/services/pizza';
 import apiI from '@/services/ingrediente';
+import { mapState } from 'vuex'
 
 export default {
+  computed: {
+    ...mapState(['imgUrl'])
+  },
   components: {
     Add,
     Edit,
@@ -169,7 +173,6 @@ export default {
   data() {
     const fields = ['Nombre', 'Imagen', 'Ingredientes', 'Stock', 'Precio', 'Editar', 'Eliminar'];
     const items = []
-    const ruta = this.$store.state.imgUrl
 
     return {
       showAdd: false,
@@ -178,7 +181,6 @@ export default {
       items,
       pizza: null,
       ingredientes: [],
-      ruta,
     }
   },
 }

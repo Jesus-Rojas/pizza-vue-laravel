@@ -1,13 +1,6 @@
 <template>
-  <h1>Pedidos</h1>
-</template>
+  <h1>Dashboard</h1>
 
-<script>
-export default {
-  setup() {
-    return {
-      
-    }
-  },
-}
-</script>
+  <p>Este aplicativo se desarrollo para una prueba de empleo.</p>
+
+</template>

@@ -6,6 +6,7 @@ import Dashboard from '@/views/Dashboard.vue';
 import Pizza from '@/views/Pizza.vue';
 import Ingrediente from '@/views/Ingrediente.vue';
 import Checkout from '@/views/Checkout.vue';
+import Pedidos from '@/views/Pedidos.vue';
 
 const routes = [
   {
@@ -27,6 +28,11 @@ const routes = [
         name: 'ingrediente',
         component: Ingrediente,
       },
+      {
+        path: 'pedidos',
+        name: 'pedidos',
+        component: Pedidos,
+      },
     ]
   },
   {
@@ -39,7 +45,7 @@ const routes = [
         component: Home,
       },
       {
-        path: '/checkout',
+        path: 'checkout',
         name: 'checkout',
         component: Checkout,
       },

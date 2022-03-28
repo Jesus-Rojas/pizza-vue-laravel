@@ -33,4 +33,8 @@ Route::get('/dashboard/ingrediente', function () {
     return view('welcome');
 });
 
+Route::get('/dashboard/pedidos', function () {
+    return view('welcome');
+});
+
 

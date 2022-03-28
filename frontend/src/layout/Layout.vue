@@ -22,6 +22,12 @@
           >
             Ingrediente
           </router-link>
+          <router-link 
+            class="d-block text-white fs-5"
+            :to="{ name: 'pedidos' }"
+          >
+            Lista de Pedidos
+          </router-link>
           <hr class="text-white" />
           <router-link 
             class="d-block text-white fs-5"
