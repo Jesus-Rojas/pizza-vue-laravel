@@ -193,12 +193,14 @@ export default {
         }
       })
       const datos = {
-        token: localStorage.getItem('token'),
-        valor_total: this.totalCarrito,
+        token: localStorage.getItem('access_token'),
+        venta_total: this.totalCarrito,
         pedido: carrito,
       };
-      const respuesta = await apiP.add(datos)
-      console.log(respuesta)
+      const { mensaje } = await apiP.add(datos)
+      this.mensaje(mensaje, 'success')
+      this.$store.commit('setCarrito', [])
+      this.$router.push({ name: 'home'});
     },
     validarCheckout(){
       const token = localStorage.getItem('access_token')
@@ -215,14 +217,22 @@ export default {
         duration: 1500,
       });
     },
-    login(){
+    async login(){
       const condicion = this.validar()
       if (condicion) {
         const datos = {
           email: this.email,
           password: this.password,
         }
-        console.log(datos)
+        const { status, mensaje, token } = await apiU.login(datos);
+        if (status == 'ok') {
+          localStorage.setItem('access_token', token)
+          this.mensaje(mensaje, 'success')
+          this.condicionModal = false;
+          this.pagar()
+          return
+        }
+        this.mensaje(mensaje)
       }
     },
     validar(condicion = false){
@@ -256,7 +266,7 @@ export default {
         }
         const { status, mensaje, token } = await apiU.register(datos);
         if (status == 'ok') {
-          localStorage.setItem('token', token)
+          localStorage.setItem('access_token', token)
           this.mensaje(mensaje, 'success')
           this.condicionModal = false;
           this.pagar()

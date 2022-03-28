@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -19,20 +20,17 @@ class UserController extends Controller
             'password' => 'required',
             'email' => 'required',
         ]);
-        $user = User::where([
-            'password' => $request['password'],
-            'email' => $request['email'],
-        ])
-        ->first();
-        if (!$user) {
+        $credentials = $request->only('email', 'password');
+        if (Auth::attempt($credentials)) {
             return response()->json([
-                'status' => 'bad',
-                'mensaje' => 'Las credenciales no son validas, intenta de nuevo',
+                'status' => 'ok',
+                'mensaje' => 'Login success',
+                'token' => $request['email']
             ]);
         }
         return response()->json([
-            'status' => 'ok',
-            'mensaje' => 'Login success',
+            'status' => 'bad',
+            'mensaje' => 'Las credenciales no son validas, intenta de nuevo',
         ]);
     }
 
@@ -60,12 +58,12 @@ class UserController extends Controller
             return response()->json([
                 'status' => 'bad',
                 'mensaje' => 'Error en el servidor',
-                'token' => $request['email'],
             ]);
         }
         return response()->json([
             'status' => 'ok',
             'mensaje' => 'Se creo usuario con exito',
+            'token' => $request['email'],
         ]);
     }
 
