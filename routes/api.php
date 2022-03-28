@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\IngredienteController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PizzaController;
 use App\Http\Controllers\RolController;
@@ -23,6 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('sendEmail', [MailController::class, 'sendEmail']);
 Route::post('login', [UserController::class, 'login']);
 Route::post('register', [UserController::class, 'register']);
 

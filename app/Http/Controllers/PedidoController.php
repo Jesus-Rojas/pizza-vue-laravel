@@ -42,6 +42,13 @@ class PedidoController extends Controller
                     'pedidos_id' => $pedido->id,
                 ]);
             }
+            
+            $details = [
+                'title' => 'Gracias por su compra',
+                'body' => 'Compraste n pizzas por el valor de $',
+                'destinatario' => 'jarojas6524@misena.edu.co',
+                'asunto' => $user->email,
+            ];
             return response()->json([
                 'status' => 'ok',
                 'mensaje' => 'El pedido se creo con exito',
