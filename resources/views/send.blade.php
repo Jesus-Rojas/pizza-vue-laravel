@@ -8,8 +8,27 @@
 </head>
 <body>
   <h1> {{ $details['title'] }} </h1>
-  <p> {{ $details['body'] }} </p>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Precio</th>
+        <th>Cantidad</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach ($details['body']['detalle_pedidos'] as $value)
+      <tr>
+        <td>{{ $value['pizzas']['nombre'] }}</td>
+        <td>{{ $value['precio_unitario'] }}</td>
+        <td>{{ $value['cantidad'] }}</td>
+        <td>{{ $value['precio_unitario'] * $value['cantidad'] }}</td>
+      </tr>
+      @endforeach
+    </tbody>
+  </table>
   <br>
-  <p>Total: </p>
+  <p>Total Venta: {{ $details['body']['venta_total'] }}</p>
 </body>
 </html>

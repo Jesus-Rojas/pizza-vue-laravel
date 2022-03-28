@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendEmail;
 use App\Models\DetallePedido;
 use App\Models\Pedido;
 use App\Models\User;
@@ -42,13 +43,15 @@ class PedidoController extends Controller
                     'pedidos_id' => $pedido->id,
                 ]);
             }
-            
+            // consulto de nuevo para traer todas sus relaciones, me facilito trabajo en el blade
+            $pedido = Pedido::where('id', $pedido->id)->with('detalle_pedidos.pizzas')->first();
             $details = [
                 'title' => 'Gracias por su compra',
-                'body' => 'Compraste n pizzas por el valor de $',
-                'destinatario' => 'jarojas6524@misena.edu.co',
-                'asunto' => $user->email,
+                'body' => $pedido,
+                'destinatario' => $user->email,
+                'asunto' => 'Pizza - Comprobante de pago',
             ];
+            SendEmail::dispatch($details);
             return response()->json([
                 'status' => 'ok',
                 'mensaje' => 'El pedido se creo con exito',
