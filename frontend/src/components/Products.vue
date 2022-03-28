@@ -113,7 +113,7 @@ export default {
       this.condicionModal = true
     },
     async consultarApi(){
-      const { data } = await api.read()
+      const { data } = await api.ventaPizza()
       this.items = data
     },
     hide(){

@@ -15,7 +15,7 @@ class PedidoController extends Controller
     public function index()
     {
         return response()->json(Pedido::with('detalle_pedidos.pizzas','users')->paginate(10));
-    }
+    }    
 
     public function create()
     {
@@ -30,7 +30,7 @@ class PedidoController extends Controller
                 'pedido' => 'required',
                 'venta_total' => 'required',
             ]);
-            DB::transaction();
+            DB::beginTransaction();
             // temporal user
             $user = User::where('email', $request['token'])->first();
             $pedido = Pedido::create([
@@ -39,8 +39,8 @@ class PedidoController extends Controller
             ]);
             foreach ($request['pedido'] as $value) {
                 // pendiente restar stock
-                $pizza = Pizza::find($value['pizzas_id']);
-                if ($value['cantidad'] > $pizza->cantidad ) {
+                $pizza = Pizza::where('id', $value['pizzas_id'])->first();
+                if ($value['cantidad'] > $pizza->stock ) {
                     DB::rollBack();
                     return response()->json([
                         'status' => 'verificar',
@@ -49,6 +49,10 @@ class PedidoController extends Controller
                             'id' => $pizza->id,
                             'cantidad' => $pizza->stock,
                         ]
+                    ]);
+                } else {
+                    $pizza->update([
+                        'stock' => $pizza->stock - $value['cantidad']
                     ]);
                 }
                 DetallePedido::create([
@@ -69,7 +73,7 @@ class PedidoController extends Controller
             ];
             SendEmail::dispatch($details);
             return response()->json([
-                'status' => 'ok',
+                'status' => 'success',
                 'mensaje' => 'El pedido se creo con exito',
             ]);
         } catch (\Throwable $th) {

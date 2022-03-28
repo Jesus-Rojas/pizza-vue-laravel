@@ -14,6 +14,17 @@ class PizzaController extends Controller
         return response()->json(Pizza::with('ingrediente_pizzas.ingredientes')->paginate(10));
     }
 
+    public function ventaPizza()
+    {
+        return response()
+            ->json(
+                Pizza::where('stock', '>', 0)
+                ->with('ingrediente_pizzas.ingredientes')
+                ->paginate(10)
+            );
+    }
+
+
     public function create()
     {
         //

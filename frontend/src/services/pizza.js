@@ -11,6 +11,15 @@ const read =  async () => {
   }
 }
 
+const ventaPizza =  async () => {
+  try {
+    const respuesta = await fetch(`${ruta}/ventaPizza`)
+    return await respuesta.json();
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const add =  async (datos) => {
   try {
     const respuesta = await fetch(`${ruta}/pizza`, {
@@ -54,4 +63,5 @@ export default {
   add,
   update,
   remove,
+  ventaPizza,
 }

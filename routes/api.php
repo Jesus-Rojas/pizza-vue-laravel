@@ -28,6 +28,7 @@ Route::post('sendEmail', [MailController::class, 'sendEmail']);
 Route::post('login', [UserController::class, 'login']);
 Route::post('register', [UserController::class, 'register']);
 
+Route::get('ventaPizza', [PizzaController::class, 'ventaPizza']);
 Route::resource('pizza', PizzaController::class);
 Route::get('ingrediente/all', [IngredienteController::class, 'all']);
 Route::resource('ingrediente', IngredienteController::class);

@@ -220,7 +220,7 @@ export default {
           this.$store.commit('setCarrito', carrito)
         }
       }
-      this.mensaje(mensaje, 'danger')
+      this.mensaje(mensaje)
     },
     validarCheckout(){
       const token = localStorage.getItem('access_token')
