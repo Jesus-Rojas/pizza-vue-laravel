@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AddPizzaRequest;
-use App\Http\Requests\EditPizzaRequest;
+use App\Http\Requests\PizzaRequest;
 use App\Models\Ingrediente;
 use App\Models\IngredientePizza;
 use App\Models\Pizza;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class PizzaController extends Controller
 {
@@ -33,20 +32,50 @@ class PizzaController extends Controller
         //
     }
 
-    public function store(AddPizzaRequest $request)
+    public function validar($stock, $precio, $ingredientes)
+    {
+        // Validacion manual debido al formData
+        if(!is_numeric($stock)) {
+            return ['error' => 'El campo stock deber ser numerico'];
+        }
+        if(!is_numeric($precio)) {
+            return ['error' => 'El campo precio deber ser numerico'];
+        }
+        if(!is_array($ingredientes)) {
+            return ['error' => 'El campo ingredientes deber ser un array'];
+        }
+        foreach ($ingredientes as $value) {
+            if (!is_numeric($value)) {
+                return ['error' => 'El campo array debe contener numeros'];
+            }
+        }
+        return ['success' => 'Paso validaciones'];
+    }
+
+    public function store(PizzaRequest $request)
     {
         try {
-            // pendiente validar los textos a array
-            $ingredientes = json_decode($request['ingredientes']);
+            $ingredientes =  json_decode($request['ingredientes']);
+            $repuesta = $this->validar($request['stock'],$request['precio'],$ingredientes);
+            if (array_key_exists('error', $repuesta)) {
+                return response()->json($repuesta, 422);
+            }
+            $datos = [
+                'ingredientes' => $ingredientes,
+                'nombre' => $request['nombre'],
+                'stock' => json_decode($request['stock']),
+                'precio' => json_decode($request['precio']),
+            ];
+
             $imagen = $request->file('imagen')->store('public/pizzas');
             $imagen = Storage::url($imagen);
             $pizza = Pizza::create([
-                'nombre' => $request['nombre'],
-                'precio' => $request['precio'],
-                'stock' => $request['stock'],
+                'nombre' => $datos['nombre'],
+                'precio' => $datos['precio'],
+                'stock' => $datos['stock'],
                 'imagen' => $imagen,
             ]);
-            foreach ($ingredientes as $value) {
+            foreach ($datos['ingredientes'] as $value) {
                 $ingrediente = Ingrediente::where('id', $value)->first();
                 if ($ingrediente) {
                     IngredientePizza::create([
@@ -74,10 +103,21 @@ class PizzaController extends Controller
         //
     }
 
-    public function update(EditPizzaRequest $request, $id)
+    public function update(PizzaRequest $request, $id)
     {
         try {
             // pendiente validar los textos a array
+            $ingredientes =  json_decode($request['ingredientes']);
+            $repuesta = $this->validar($request['stock'],$request['precio'],$ingredientes);
+            if (array_key_exists('error', $repuesta)) {
+                return response()->json($repuesta, 422);
+            }
+            $datos = [
+                'ingredientes' => $ingredientes,
+                'nombre' => $request['nombre'],
+                'stock' => json_decode($request['stock']),
+                'precio' => json_decode($request['precio']),
+            ];
             
             $pizza = Pizza::where('id', $id)->first();
             if (!$pizza) {
@@ -96,15 +136,15 @@ class PizzaController extends Controller
             }
             
             $pizza->update([
-                'nombre' => $request['nombre'],
-                'precio' => $request['precio'],
-                'stock' => $request['stock'],
+                'nombre' => $datos['nombre'],
+                'precio' => $datos['precio'],
+                'stock' => $datos['stock'],
             ]);
 
-            $ingredientesNew = json_decode($request['ingredientes']);
+            $ingredientesNew = $datos['ingredientes'];
             $ingredientesOld = IngredientePizza::where('pizzas_id', $id)->pluck('ingredientes_id');
             $ingredientesOld = json_decode(json_encode($ingredientesOld));
-            $diferencia = array_diff($ingredientesOld,$ingredientesNew);
+            $diferencia = array_diff($ingredientesOld, $ingredientesNew);
             foreach ($diferencia as $value) {
                 $ingrediente = Ingrediente::where('id', $value)->first();
                 if ($ingrediente) {
