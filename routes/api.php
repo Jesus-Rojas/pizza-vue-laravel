@@ -25,18 +25,21 @@ use Illuminate\Support\Facades\Route;
     return $request->user();
 }); */
 
+Route::get('problems', function () {
+    return response()->json('No tienes permiso para ingresar a esta ruta', 401);
+})->name('problems');
+
 Route::post('register', [UserController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+Route::post('logout', [AuthController::class, 'logout']);
+Route::post('refresh', [AuthController::class, 'refresh']);
+Route::post('me', [AuthController::class, 'me'])->name('me');;
+
 
 Route::group([
     'middleware' => 'api',
-    'prefix' => 'auth'
+    // 'prefix' => 'auth'
 ], function ($router) {
-    Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('refresh', [AuthController::class, 'refresh']);
-    Route::post('me', [AuthController::class, 'me']);
-
-    
     Route::resource('pizza', PizzaController::class);
     Route::get('ingrediente/all', [IngredienteController::class, 'all']);
     Route::resource('ingrediente', IngredienteController::class);

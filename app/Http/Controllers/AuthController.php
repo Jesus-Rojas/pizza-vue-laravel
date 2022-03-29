@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use GuzzleHttp\Psr7\Request;
 
 class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('auth', ['except' => ['login','register']]);
     }
 
     public function login()
@@ -21,8 +22,14 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
 
+    public function problems()
+    {
+        return response()->json('No tienes permiso para ingresar a esta ruta', 401);
+    }
+
     public function me()
     {
+        return response()->json('adasdas');
         return response()->json(auth()->user());
     }
 
