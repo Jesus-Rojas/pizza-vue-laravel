@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
-use GuzzleHttp\Psr7\Request;
+use App\Http\Requests\RegisterUserRequest;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -22,14 +25,35 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
 
-    public function problems()
+    public function register(RegisterUserRequest $request)
     {
-        return response()->json('No tienes permiso para ingresar a esta ruta', 401);
+        try {
+            return response()->json('asdasd');
+            $user = User::where('email', $request['email'])->first();
+            if ($user) {
+                return response()->json([
+                    'status' => 'bad',
+                    'mensaje' => 'El usuario ya se encuentra registrado en el sistema',
+                ], 403);
+            }
+            $user = User::create([
+                'password' => Hash::make($request['password']),
+                'email' => $request['email'],
+                'name' => $request['name'],
+                'roles_id' => 2,
+            ]);
+            $credentials = request(['email', 'password']);
+            if (! $token = auth()->attempt($credentials)) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+            return $this->respondWithToken($token);
+        } catch (\Throwable $th) {
+            return response()->json($th, 500);
+        }
     }
 
     public function me()
     {
-        return response()->json('adasdas');
         return response()->json(auth()->user());
     }
 
