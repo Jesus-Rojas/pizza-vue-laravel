@@ -9,8 +9,10 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // \App\Models\User::factory(10)->create();
+
         $this->call([
             RolSeeder::class,
+            UserSeeder::class,
             PizzaSeeder::class,
             IngredienteSeeder::class,
             IngredientePizzaSeeder::class,

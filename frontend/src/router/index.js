@@ -7,11 +7,13 @@ import Pizza from '@/views/Pizza.vue';
 import Ingrediente from '@/views/Ingrediente.vue';
 import Checkout from '@/views/Checkout.vue';
 import Pedidos from '@/views/Pedidos.vue';
+import utility from '@/utility';
 
 const routes = [
   {
     path: '/dashboard',
     component: Layout,
+    meta: { requiresAuth: true},
     children: [
       {
         path: '',
@@ -59,5 +61,26 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
+
+
+
+router.beforeEach((to, from, next) => {
+  const { payload, exist } = utility.getToken();
+  if (exist) {
+    console.log(payload)
+  }
+  /* isAuthenticated = localStorage.getItem('accessToken');
+  if ( to.meta.requiresAuth && !isAuthenticated ) {
+    if (fallaVueRouter) {
+      fallaVueRouter = false;
+      return next({ name: 'auth-login'})
+    }
+    return next()
+  }
+  if ( to.name === 'auth-login' && isAuthenticated ) {
+    return next({ name: 'dashboard'})
+  } */
+  return next()
+})
 
 export default router;

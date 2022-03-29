@@ -123,7 +123,11 @@ export default {
       }
     },
     async readPizza(){
-      let { data } = await apiP.read();
+      let { data, error, message } = await apiP.read();
+      if (error) {
+        this.mensaje(message);
+        return
+      }
       this.items = data;
     },
     async readIngredientes(){

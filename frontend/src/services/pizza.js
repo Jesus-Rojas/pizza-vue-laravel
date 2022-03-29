@@ -1,19 +1,32 @@
 import store from "@/store";
+import utility from '@/utility';
 
 const ruta = store.state.apiUrl
 
 const read =  async () => {
   try {
-    const respuesta = await fetch(`${ruta}/pizza`)
-    return await respuesta.json();
+    const { exist, token } = utility.getToken();
+    if (exist) {
+      const respuesta = await fetch(`${ruta}/pizza`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      return await respuesta.json();
+    }
+    throw {
+      message: 'El token es invalido',
+      error: true
+    };
   } catch (error) {
     console.log(error)
+    return error
   }
 }
 
 const ventaPizza =  async () => {
   try {
-    const respuesta = await fetch(`${ruta}/ventaPizza`)
+    const respuesta = await fetch(`${ruta}/pizza/ventaPizza`)
     return await respuesta.json();
   } catch (error) {
     console.log(error)
