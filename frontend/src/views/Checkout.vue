@@ -218,6 +218,9 @@ export default {
           ])
         } else {
           this.$store.commit('setCarrito', carrito)
+          if (carrito.length == 0) {
+            this.$router.push({ name: 'home'});
+          }
         }
       }
       this.mensaje(mensaje)

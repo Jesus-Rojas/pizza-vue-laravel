@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IngredienteController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\PedidoController;
@@ -20,19 +21,32 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+/* Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+}); */
+
+Route::post('register', [UserController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth'
+], function ($router) {
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::post('me', [AuthController::class, 'me']);
+
+    
+    Route::resource('pizza', PizzaController::class);
+    Route::get('ingrediente/all', [IngredienteController::class, 'all']);
+    Route::resource('ingrediente', IngredienteController::class);
+    Route::resource('pedido', PedidoController::class);
+    Route::resource('rol', RolController::class);
+    Route::resource('user', UserController::class);
+
 });
 
-Route::post('sendEmail', [MailController::class, 'sendEmail']);
-Route::post('login', [UserController::class, 'login']);
-Route::post('register', [UserController::class, 'register']);
+// Route::post('sendEmail', [MailController::class, 'sendEmail']);
 
 Route::get('ventaPizza', [PizzaController::class, 'ventaPizza']);
-Route::resource('pizza', PizzaController::class);
-Route::get('ingrediente/all', [IngredienteController::class, 'all']);
-Route::resource('ingrediente', IngredienteController::class);
-Route::resource('pedido', PedidoController::class);
-Route::resource('rol', RolController::class);
-Route::resource('user', UserController::class);
 
