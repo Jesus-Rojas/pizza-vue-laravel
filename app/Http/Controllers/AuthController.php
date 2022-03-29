@@ -28,7 +28,6 @@ class AuthController extends Controller
     public function register(RegisterUserRequest $request)
     {
         try {
-            return response()->json('asdasd');
             $user = User::where('email', $request['email'])->first();
             if ($user) {
                 return response()->json([
@@ -43,9 +42,7 @@ class AuthController extends Controller
                 'roles_id' => 2,
             ]);
             $credentials = request(['email', 'password']);
-            if (! $token = auth()->attempt($credentials)) {
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
+            $token = auth()->attempt($credentials);
             return $this->respondWithToken($token);
         } catch (\Throwable $th) {
             return response()->json($th, 500);

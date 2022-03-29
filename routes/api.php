@@ -9,7 +9,7 @@ use App\Http\Controllers\RolController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('problems', function () {
-    return response()->json('No tienes permiso para ingresar a esta ruta', 401);
+    return response()->json('El token es invalido o no tienes permiso para ingresar a esta ruta', 401);
 })->name('problems');
 
 Route::get('ventaPizza', [PizzaController::class, 'ventaPizza']);
