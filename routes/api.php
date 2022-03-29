@@ -12,7 +12,7 @@ Route::get('problems', function () {
     return response()->json('El token es invalido o no tienes permiso para ingresar a esta ruta', 401);
 })->name('problems');
 
-Route::get('ventaPizza', [PizzaController::class, 'ventaPizza']);
+Route::get('pizza/ventaPizza', [PizzaController::class, 'ventaPizza']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);
@@ -26,6 +26,4 @@ Route::group([ 'middleware' => 'api', ], function ($router) {
     Route::resource('pizza', PizzaController::class);
     Route::resource('ingrediente', IngredienteController::class);
     Route::resource('pedido', PedidoController::class);
-    Route::resource('rol', RolController::class);
-    Route::resource('user', UserController::class);
 });

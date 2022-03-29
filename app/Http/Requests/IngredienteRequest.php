@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
-class RegisterUserRequest extends FormRequest
+class IngredienteRequest extends FormRequest
 {
     public function authorize()
     {
@@ -17,18 +17,14 @@ class RegisterUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required',
-            'name' => 'required',
-            'password' => 'required',
+            'nombre' => 'required',
         ];
     }
 
     public function messages()
     {
         return [
-            'email.required' => 'El correo es requerido.',
-            'name.required' => 'El nombre es requerido.',
-            'password.required' => 'La contraseña es requerida.',
+            'nombre.required' => 'El nombre es requerido.',
         ];
     }
 

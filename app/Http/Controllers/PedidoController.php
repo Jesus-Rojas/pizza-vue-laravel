@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PedidoRequest;
 use App\Jobs\SendEmail;
 use App\Models\DetallePedido;
 use App\Models\Pedido;
@@ -22,17 +23,12 @@ class PedidoController extends Controller
         //
     }
 
-    public function store(Request $request)
+    public function store(PedidoRequest $request)
     {
         try {
-            $request->validate([
-                'token' => 'required',
-                'pedido' => 'required',
-                'venta_total' => 'required',
-            ]);
             DB::beginTransaction();
             // temporal user
-            $user = User::where('email', $request['token'])->first();
+            $user = auth()->user();
             $pedido = Pedido::create([
                 'venta_total' => $request['venta_total'],
                 'users_id' => $user->id,
@@ -40,27 +36,29 @@ class PedidoController extends Controller
             foreach ($request['pedido'] as $value) {
                 // pendiente restar stock
                 $pizza = Pizza::where('id', $value['pizzas_id'])->first();
-                if ($value['cantidad'] > $pizza->stock ) {
-                    DB::rollBack();
-                    return response()->json([
-                        'status' => 'verificar',
-                        'mensaje' => 'Algunos productos no tienen stock',
-                        'pizza' => [
-                            'id' => $pizza->id,
-                            'cantidad' => $pizza->stock,
-                        ]
-                    ]);
-                } else {
-                    $pizza->update([
-                        'stock' => $pizza->stock - $value['cantidad']
+                if ($pizza) {
+                    if ($value['cantidad'] > $pizza->stock ) {
+                        DB::rollBack();
+                        return response()->json([
+                            'status' => 'verificar',
+                            'mensaje' => 'Algunos productos no tienen stock',
+                            'pizza' => [
+                                'id' => $pizza->id,
+                                'cantidad' => $pizza->stock,
+                            ]
+                        ], 424);
+                    } else {
+                        $pizza->update([
+                            'stock' => $pizza->stock - $value['cantidad']
+                        ]);
+                    }
+                    DetallePedido::create([
+                        'cantidad' => $value['cantidad'],
+                        'precio_unitario' => $value['precio_unitario'],
+                        'pizzas_id' => $value['pizzas_id'],
+                        'pedidos_id' => $pedido->id,
                     ]);
                 }
-                DetallePedido::create([
-                    'cantidad' => $value['cantidad'],
-                    'precio_unitario' => $value['precio_unitario'],
-                    'pizzas_id' => $value['pizzas_id'],
-                    'pedidos_id' => $pedido->id,
-                ]);
             }
             DB::commit();
             // consulto de nuevo para traer todas sus relaciones, me facilito trabajo en el blade
@@ -78,7 +76,7 @@ class PedidoController extends Controller
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json($th);
+            return response()->json($th, 500);
         }
     }
 

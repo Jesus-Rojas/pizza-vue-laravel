@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\IngredienteRequest;
 use App\Models\Ingrediente;
 use Illuminate\Http\Request;
 
@@ -22,29 +23,18 @@ class IngredienteController extends Controller
         //
     }
 
-    public function store(Request $request)
+    public function store(IngredienteRequest $request)
     {
         try {
-            $request->validate([
-                'nombre' => 'required',
-            ]);
-            $ingrediente = Ingrediente::create([
+            Ingrediente::create([
                 'nombre' => $request['nombre']
             ]);
-    
-            if ($ingrediente->save()) {
-                return response()->json([
-                    'mensaje' => 'Se creo registro con exito',
-                    'status' => 'ok'
-                ]);
-            }
-    
             return response()->json([
-                'mensaje' => 'problemas en el servidor verificar',
-                'status' => 'bad'
+                'mensaje' => 'Se creo registro con exito',
+                'status' => 'ok'
             ]);
         } catch (\Throwable $th) {
-            return response()->json($th);
+            return response()->json($th, 404);
         }
     }
 
@@ -58,7 +48,7 @@ class IngredienteController extends Controller
         //
     }
 
-    public function update(Request $request, $id)
+    public function update(IngredienteRequest $request, $id)
     {
         try {
             $ingrediente = Ingrediente::find($id);
@@ -66,7 +56,7 @@ class IngredienteController extends Controller
                 return response()->json([
                     'mensaje' => 'El registro no existe',
                     'status' => 'bad'
-                ]);
+                ], 404);
             }
             $ingrediente->update([
                 'nombre' => $request['nombre']
@@ -76,7 +66,7 @@ class IngredienteController extends Controller
                 'status' => 'ok'
             ]);
         } catch (\Throwable $th) {
-            return response()->json($th);
+            return response()->json($th, 500);
         }
     }
 
@@ -88,7 +78,7 @@ class IngredienteController extends Controller
                 return response()->json([
                     'mensaje' => 'El registro no existe',
                     'status' => 'bad'
-                ]);
+                ], 404);
             }
             $ingrediente->delete();
             return response()->json([

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddPizzaRequest;
+use App\Http\Requests\EditPizzaRequest;
+use App\Models\Ingrediente;
 use App\Models\IngredientePizza;
 use App\Models\Pizza;
 use Illuminate\Http\Request;
@@ -30,22 +33,10 @@ class PizzaController extends Controller
         //
     }
 
-    public function store(Request $request)
+    public function store(AddPizzaRequest $request)
     {
         try {
-            $request->validate([
-                'nombre' => 'required',
-                'imagen' => 'required',
-                'stock' => 'required',
-                'precio' => 'required',
-                'ingredientes' => 'required',
-            ]);
-            if (!$request->hasFile('imagen')) {
-                return response()->json([
-                    'status' => 'bad',
-                    'message' => 'Es obligatoria la imagen',
-                ]);
-            }
+            // pendiente validar los textos a array
             $ingredientes = json_decode($request['ingredientes']);
             $imagen = $request->file('imagen')->store('public/pizzas');
             $imagen = Storage::url($imagen);
@@ -56,17 +47,20 @@ class PizzaController extends Controller
                 'imagen' => $imagen,
             ]);
             foreach ($ingredientes as $value) {
-                IngredientePizza::create([
-                    'ingredientes_id' => $value, 
-                    'pizzas_id' => $pizza->id, 
-                ]);
+                $ingrediente = Ingrediente::where('id', $value)->first();
+                if ($ingrediente) {
+                    IngredientePizza::create([
+                        'ingredientes_id' => $value, 
+                        'pizzas_id' => $pizza->id, 
+                    ]);
+                }
             }
             return response()->json([
                 'status' => 'ok',
                 'message' => 'La pizza se creo con exito',
             ]);
         } catch (\Throwable $th) {
-            return response()->json($th);
+            return response()->json($th, 500);
         }
     }
 
@@ -80,21 +74,17 @@ class PizzaController extends Controller
         //
     }
 
-    public function update(Request $request, $id)
+    public function update(EditPizzaRequest $request, $id)
     {
         try {
-            $request->validate([
-                'nombre' => 'required',
-                'stock' => 'required',
-                'precio' => 'required',
-                'ingredientes' => 'required',
-            ]);
-            $pizza = Pizza::find($id);
+            // pendiente validar los textos a array
+            
+            $pizza = Pizza::where('id', $id)->first();
             if (!$pizza) {
                 return response()->json([
                     'mensaje' => 'El registro no existe',
                     'status' => 'bad'
-                ]);
+                ], 404);
             }
             
             if ($request->hasFile('imagen')) {
@@ -104,6 +94,7 @@ class PizzaController extends Controller
                     'imagen' => $imagen
                 ]);
             }
+            
             $pizza->update([
                 'nombre' => $request['nombre'],
                 'precio' => $request['precio'],
@@ -115,26 +106,32 @@ class PizzaController extends Controller
             $ingredientesOld = json_decode(json_encode($ingredientesOld));
             $diferencia = array_diff($ingredientesOld,$ingredientesNew);
             foreach ($diferencia as $value) {
-                $ingrediente = IngredientePizza::where([
-                    ['pizzas_id', $id],
-                    ['ingredientes_id', $value]
-                ])
-                ->first();
+                $ingrediente = Ingrediente::where('id', $value)->first();
                 if ($ingrediente) {
-                    $ingrediente->delete();
+                    $ingrediente = IngredientePizza::where([
+                        ['pizzas_id', $pizza->id],
+                        ['ingredientes_id', $value]
+                    ])
+                    ->first();
+                    if ($ingrediente) {
+                        $ingrediente->delete();
+                    }
                 }
             }
             foreach ($ingredientesNew as $value) {
-                $ingrediente = IngredientePizza::where([
-                    ['pizzas_id', $id],
-                    ['ingredientes_id', $value]
-                ])
-                ->first();
-                if (!$ingrediente) {
-                    IngredientePizza::create([
-                        'ingredientes_id' => $value, 
-                        'pizzas_id' => $pizza->id, 
-                    ]);
+                $ingrediente = Ingrediente::where('id', $value)->first();
+                if ($ingrediente) {
+                    $ingrediente = IngredientePizza::where([
+                        ['pizzas_id', $pizza->id],
+                        ['ingredientes_id', $value]
+                    ])
+                    ->first();
+                    if (!$ingrediente) {
+                        IngredientePizza::create([
+                            'ingredientes_id' => $value, 
+                            'pizzas_id' => $pizza->id, 
+                        ]);
+                    }
                 }
             }
             return response()->json([
@@ -142,7 +139,7 @@ class PizzaController extends Controller
                 'status' => 'ok'
             ]);
         } catch (\Throwable $th) {
-            return response()->json($th);
+            return response()->json($th, 500);
         }
     }
 
@@ -154,7 +151,7 @@ class PizzaController extends Controller
                 return response()->json([
                     'mensaje' => 'El registro no existe',
                     'status' => 'bad'
-                ]);
+                ], 404);
             }
             $pizza->delete();
             return response()->json([
@@ -162,7 +159,7 @@ class PizzaController extends Controller
                 'status' => 'ok'
             ]);
         } catch (\Throwable $th) {
-            return response()->json($th);
+            return response()->json($th, 500);
         }
     }
 }
