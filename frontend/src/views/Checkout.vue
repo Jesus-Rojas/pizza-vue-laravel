@@ -253,12 +253,11 @@ export default {
           email: this.email,
           password: this.password,
         }
-        const { error, access_token } = await apiU.login(datos);
+        const { error } = await apiU.login(datos);
         if (error) {
           this.mensaje(error)
           return
         }
-        utility.editToken(access_token);
         this.mensaje('Iniciando Sesion ...', 'success')
         this.condicionModal = false;
         this.pagar()
@@ -293,12 +292,11 @@ export default {
           password: this.password,
           name: this.name,
         }
-        const { error, access_token } = await apiU.register(datos);
+        const { error } = await apiU.register(datos);
         if (error) {
           this.mensaje(error)
           return
         }
-        utility.editToken(access_token);
         this.mensaje('Se registro usuario con exito', 'success')
         this.condicionModal = false;
         this.pagar()

@@ -16,7 +16,8 @@
 					<div class="main-menu">
 						<ul>
 							<li>
-								<a href="#">Jesus Rojas</a>
+								<a href="#" @click="logout" v-if="user.name">{{ user.name }}</a>
+								<a href="#" @click="toggleModal" v-else>Iniciar Sesion</a>
 							</li>
 							<li>
 								<div class="position-relative" @click="$router.push({ name: 'checkout'})">
@@ -45,23 +46,177 @@
 	</header>
 	<div class="pb-custom"/>
 	<router-view />
+
+	<modal
+    v-if="condicionModal"
+    :classCustom="titulo == 'Login' ? 'size-modal-login' : 'size-modal-register'"
+    :showHeader="false"
+  >
+    <template v-slot:body>
+      <h3 class="text-center py-2">{{ titulo }}</h3>
+      <form :action="($event) => $event.preventDefault()">
+        <div class="row pb-2" v-if="titulo != 'Login'">
+          <div class="col-4 align-self-center">
+            Nombre: 
+          </div>
+          <div class="col-8 text-start">
+            <input type="text" class="w-75 form-control" v-model="name">
+          </div>
+        </div>
+        <div class="row pb-2">
+          <div class="col-4 align-self-center">
+            Correo: 
+          </div>
+          <div class="col-8 text-start">
+            <input type="email" class="w-75 form-control" v-model="email">
+          </div>
+        </div>
+        <div class="row pb-2">
+          <div class="col-4 align-self-center">
+            Contraseña: 
+          </div>
+          <div class="col-8 text-start">
+            <input type="password" autocomplete="new-pass" class="w-75 form-control" v-model="password">
+          </div>
+        </div>
+        <div class="py-2 text-center text-info">
+          <span 
+            class="cursor-pointer" 
+            @click="titulo = titulo == 'Login' ? 'Registrarse' : 'Login'"
+          >
+            {{ titulo == 'Login' ? 'Registrarse' : 'Login' }} ?
+          </span>
+        </div>
+      </form>
+    </template>
+    <template v-slot:footer>
+      <button 
+        v-if="titulo == 'Login'"
+        class="btn btn-success me-2"
+        @click="login"
+      >
+        Iniciar Sesion
+      </button>
+      <button 
+        v-else
+        class="btn btn-success me-2"
+        @click="register"
+      >
+        Registrarse
+      </button>
+      <button class="btn btn-danger" @click="hide">Salir</button>
+    </template>
+  </modal>
 </template>
 
 <script>
 import logo from '@/assets/logo.png';
 import CarritoIcon from '@/utility/CarritoIcon';
 import { mapState } from 'vuex'
+import utility from "@/utility";
+import apiU from '@/services/user.js'
+import Modal from "@/utility/Modal";
 
 export default {
 	components: {
-		CarritoIcon
+		CarritoIcon,
+		Modal,
 	},
 	computed: {
-    ...mapState(['carrito']),
+    ...mapState(['carrito','user']),
   },
-  setup(){
+	methods: {
+		async logout() {
+			if (confirm('Esta seguro de cerrar sesion ?')) {
+				const { message } = await apiU.logout();
+				this.mensaje(message,'success')
+			}
+		},
+		toggleModal(){
+			this.condicionModal = true
+		},
+		async login(){
+      const condicion = this.validar()
+      if (condicion) {
+        const datos = {
+          email: this.email,
+          password: this.password,
+        }
+        const { error } = await apiU.login(datos);
+        if (error) {
+          this.mensaje(error)
+          return
+        }
+        this.mensaje('Iniciando Sesion ...', 'success')
+        this.resetModal()
+      }
+    },
+		validar(condicion = false){
+      if (condicion) {
+        if (!this.name) {
+          this.mensaje('El nombre es requerido')
+          return false
+        }
+      }
+      if (!this.email) {
+        this.mensaje('El correo es requerido')
+        return false
+      }
+      if (!this.validarEmail.test(this.email)) {
+        this.mensaje('El correo no es valido')
+        return false
+      }
+      if (!this.password) {
+        this.mensaje('La contraseña es requerida')
+        return false
+      }
+      return true
+    },
+		async register(){
+      const condicion = this.validar(true)
+      if (condicion) {
+        const datos = {
+          email: this.email,
+          password: this.password,
+          name: this.name,
+        }
+        const { error } = await apiU.register(datos);
+        if (error) {
+          this.mensaje(error)
+          return
+        }
+        this.mensaje('Se registro usuario con exito', 'success')
+				this.resetModal()
+      }
+    },
+		mensaje(message = '', type = 'error'){
+      this.$toast.open({
+        message,
+        type,
+        duration: 1500,
+      });
+    },
+    hide(){
+      this.resetModal()
+    },
+		resetModal(){
+			this.name = ''
+			this.email = ''
+			this.password = ''
+			this.titulo = 'Login'
+			this.condicionModal = false;
+		}
+	},
+  data(){
+		const validarEmail = /^[\w\._]{5,30}\+?[\w]{0,10}@[\w\.\-]{3,}\.\w{2,5}$/i;
     return {
+			validarEmail,
 			logo,
+			condicionModal: false,
+			name: '',
+			email: '',
+			password: '',
+			titulo: 'Login'
     }
   }
 }
