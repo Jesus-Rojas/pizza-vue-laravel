@@ -14,9 +14,9 @@ const read =  async () => {
       })
       return await respuesta.json();
     }
-    throw {
-      message: 'El token es invalido',
-      error: true
+    utility.removeToken();
+    return {
+      error: 'El token es invalido',
     };
   } catch (error) {
     console.log(error)
@@ -35,11 +35,21 @@ const ventaPizza =  async () => {
 
 const add =  async (datos) => {
   try {
-    const respuesta = await fetch(`${ruta}/pizza`, {
-      method: 'POST',
-      body: datos
-    })
-    return await respuesta.json();
+    const { exist, token } = utility.getToken();
+    if(exist){
+      const respuesta = await fetch(`${ruta}/pizza`, {
+        method: 'POST',
+        body: datos,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      return await respuesta.json();
+    }
+    utility.removeToken();
+    return {
+      error: 'El token es invalido',
+    };
   } catch (error) {
     console.log(error)
   }
@@ -47,11 +57,21 @@ const add =  async (datos) => {
 
 const update =  async (datos, id) => {
   try {
-    const respuesta = await fetch(`${ruta}/pizza/${id}?_method=PUT`, {
-      method: 'POST',
-      body: datos
-    })
-    return await respuesta.json();
+    const { exist, token } = utility.getToken();
+    if(exist){
+      const respuesta = await fetch(`${ruta}/pizza/${id}?_method=PUT`, {
+        method: 'POST',
+        body: datos,
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      return await respuesta.json();
+    }
+    utility.removeToken();
+    return {
+      error: 'El token es invalido',
+    };
   } catch (error) {
     console.log(error)
   }
@@ -59,13 +79,21 @@ const update =  async (datos, id) => {
 
 const remove =  async (id) => {
   try {
-    const respuesta = await fetch(`${ruta}/pizza/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    return await respuesta.json();
+    const { exist, token } = utility.getToken();
+    if(exist){
+      const respuesta = await fetch(`${ruta}/pizza/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      return await respuesta.json();
+    }
+    utility.removeToken();
+    return {
+      error: 'El token es invalido',
+    };
   } catch (error) {
     console.log(error)
   }

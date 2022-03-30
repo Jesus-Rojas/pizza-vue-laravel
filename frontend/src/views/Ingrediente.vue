@@ -101,7 +101,11 @@ export default {
       }
     },
     async read(){
-      let { data } = await api.read();
+      let { data, error } = await api.read();
+      if (error) {
+        this.mensaje(error)
+        return
+      }
       this.items = data;
     },
     mensaje(message = '', type = 'error'){
@@ -114,7 +118,11 @@ export default {
     async eliminar(id) {
       const condicion = confirm('Estas seguro de eliminar este ingrediente ?')
       if(condicion){
-        const { status, mensaje } = await api.remove(id);
+        const { status, mensaje, error } = await api.remove(id);
+        if (error) {
+          this.mensaje(error)
+          return
+        }
         const type = status == 'ok' ? 'success' : 'danger';
         this.mensaje(mensaje,type);
         this.read();

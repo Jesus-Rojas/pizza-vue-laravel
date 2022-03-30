@@ -21,8 +21,6 @@
 </template>
 
 <script>
-import api from '@/services/pizza.js'
-import { ref } from '@vue/reactivity'
 import store from "@/store";
 
 export default {

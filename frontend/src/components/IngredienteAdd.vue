@@ -38,9 +38,12 @@ export default {
         const datos = {
           nombre: this.nombre
         };
-        const { mensaje, status } = await api.add(datos)
-        const type = status == 'ok' ? 'success' : 'danger';
-        this.mensaje(mensaje,type)
+        const { mensaje, error } = await api.add(datos)
+        if(error){
+          this.mensaje(error)
+          return
+        }
+        this.mensaje(mensaje,'success')
         this.hide(true)
         return
       }

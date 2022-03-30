@@ -5,8 +5,20 @@ const ruta = store.state.apiUrl
 
 const read =  async () => {
   try {
-    const respuesta = await fetch(`${ruta}/pedido`)
-    return await respuesta.json();
+    const { exist, token } = utility.getToken();
+    if (exist) {
+      const respuesta = await fetch(`${ruta}/pedido`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      return await respuesta.json();
+    }
+    utility.removeToken();
+    return {
+      error: 'El token es invalido',
+    };
   } catch (error) {
     console.log(error)
   }

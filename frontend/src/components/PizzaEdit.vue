@@ -133,9 +133,12 @@ export default {
       formData.append('precio', this.precio);
       formData.append('imagen', this.condicionImagen ? this.imagen.files[0] : '');
       formData.append('ingredientes', JSON.stringify(ingredientes));
-      const { mensaje, status } = await api.update(formData, this.pizza.id)
-      const type = status == 'ok' ? 'success' : 'danger';
-      this.mensaje(mensaje,type)
+      const { mensaje, error } = await api.update(formData, this.pizza.id)
+      if(error) {
+        this.mensaje(error)
+        return
+      }
+      this.mensaje(mensaje,'success')
       this.hide(true)
     },
     toggleImage({target}){

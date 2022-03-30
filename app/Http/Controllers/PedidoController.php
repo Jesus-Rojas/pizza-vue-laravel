@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\DB;
 
 class PedidoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('Auth')->only('index');
+    }
+
     public function index()
     {
         return response()->json(Pedido::with('detalle_pedidos.pizzas','users')->paginate(10));

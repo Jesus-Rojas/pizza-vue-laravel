@@ -44,9 +44,12 @@ export default {
         const datos = {
           nombre: this.nombre
         };
-        const { mensaje, status } = await api.update(datos, this.ingrediente.id)
-        const type = status == 'ok' ? 'success' : 'danger';
-        this.mensaje(mensaje,type)
+        const { mensaje, error } = await api.update(datos, this.ingrediente.id)
+        if(error) {
+          this.mensaje(error)
+          return
+        }
+        this.mensaje(mensaje,'success')
         this.hide(true)
         return
       }

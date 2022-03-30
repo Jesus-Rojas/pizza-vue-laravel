@@ -123,15 +123,19 @@ export default {
       }
     },
     async readPizza(){
-      let { data, error, message } = await apiP.read();
+      let { data, error } = await apiP.read();
       if (error) {
-        this.mensaje(message);
+        this.mensaje(error);
         return
       }
       this.items = data;
     },
     async readIngredientes(){
-      let res = await apiI.all();
+      let { data: res, error } = await apiI.all();
+      if (error) {
+        this.mensaje(error)
+        return
+      }
       res = res.map( data => {
         return {
           value: data,
@@ -150,9 +154,12 @@ export default {
     async eliminar(id) {
       const condicion = confirm('Estas seguro de eliminar este ingrediente ?')
       if(condicion){
-        const { status, mensaje } = await apiP.remove(id);
-        const type = status == 'ok' ? 'success' : 'danger';
-        this.mensaje(mensaje,type);
+        const { mensaje, error } = await apiP.remove(id);
+        if (error) {
+          this.mensaje(error)
+          return
+        }
+        this.mensaje(mensaje,'success');
         this.readPizza();
       }
     },

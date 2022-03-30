@@ -66,21 +66,14 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const { payload, exist } = utility.getToken();
-  if (exist) {
-    // console.log(payload)
-    // console.log(header)
-  }
-  /* isAuthenticated = localStorage.getItem('accessToken');
-  if ( to.meta.requiresAuth && !isAuthenticated ) {
-    if (fallaVueRouter) {
-      fallaVueRouter = false;
-      return next({ name: 'auth-login'})
+  if ( to.meta.requiresAuth && !exist ) {
+    return next({ name: 'home'})
+  } else if ( to.meta.requiresAuth && exist ) {
+    if (payload.roles_id == 1) {
+      return next()
     }
-    return next()
+    return next({ name: 'home'})
   }
-  if ( to.name === 'auth-login' && isAuthenticated ) {
-    return next({ name: 'dashboard'})
-  } */
   return next()
 })
 

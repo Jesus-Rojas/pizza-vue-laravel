@@ -109,9 +109,12 @@ export default {
       formData.append('precio', this.precio);
       formData.append('imagen', this.imagen.files[0]);
       formData.append('ingredientes', JSON.stringify(ingredientes));
-      const { mensaje, status } = await api.add(formData)
-      const type = status == 'ok' ? 'success' : 'danger';
-      this.mensaje(mensaje,type)
+      const { mensaje, error } = await api.add(formData)
+      if (error) {
+        this.mensaje(error)
+        return
+      }
+      this.mensaje(mensaje,'success')
       this.hide(true)
     },
     toggleImage({target}){

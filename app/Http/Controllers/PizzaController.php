@@ -89,7 +89,10 @@ class PizzaController extends Controller
                 'message' => 'La pizza se creo con exito',
             ]);
         } catch (\Throwable $th) {
-            return response()->json($th, 500);
+            return response()->json([
+                'error' => 'Errror en el servidor',
+                'details' => $th
+            ], 500);
         }
     }
 
@@ -122,8 +125,7 @@ class PizzaController extends Controller
             $pizza = Pizza::where('id', $id)->first();
             if (!$pizza) {
                 return response()->json([
-                    'mensaje' => 'El registro no existe',
-                    'status' => 'bad'
+                    'error' => 'El registro no existe',
                 ], 404);
             }
             
@@ -175,11 +177,13 @@ class PizzaController extends Controller
                 }
             }
             return response()->json([
-                'mensaje' => 'Registro se actualizo con exito',
-                'status' => 'ok'
+                'mensaje' => 'Registro se actualizo con exito'
             ]);
         } catch (\Throwable $th) {
-            return response()->json($th, 500);
+            return response()->json([
+                'error' => 'Errror en el servidor',
+                'details' => $th
+            ], 500);
         }
     }
 
@@ -189,17 +193,18 @@ class PizzaController extends Controller
             $pizza = Pizza::find($id);
             if (!$pizza) {
                 return response()->json([
-                    'mensaje' => 'El registro no existe',
-                    'status' => 'bad'
+                    'error' => 'El registro no existe',
                 ], 404);
             }
             $pizza->delete();
             return response()->json([
-                'mensaje' => 'Registro se elimino con exito',
-                'status' => 'ok'
+                'mensaje' => 'Registro se elimino con exito'
             ]);
         } catch (\Throwable $th) {
-            return response()->json($th, 500);
+            return response()->json([
+                'error' => 'Errror en el servidor',
+                'details' => $th
+            ], 500);
         }
     }
 }

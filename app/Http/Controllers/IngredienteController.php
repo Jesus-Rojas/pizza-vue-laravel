@@ -15,7 +15,9 @@ class IngredienteController extends Controller
 
     public function all()
     {
-        return response()->json(Ingrediente::all());
+        return response()->json([
+            'data' => Ingrediente::all()
+        ]);
     }
 
     public function create()
@@ -34,7 +36,10 @@ class IngredienteController extends Controller
                 'status' => 'ok'
             ]);
         } catch (\Throwable $th) {
-            return response()->json($th, 404);
+            return response()->json([
+                'error' => 'Errror en el servidor',
+                'details' => $th
+            ], 500);
         }
     }
 
@@ -54,8 +59,7 @@ class IngredienteController extends Controller
             $ingrediente = Ingrediente::find($id);
             if (!$ingrediente) {
                 return response()->json([
-                    'mensaje' => 'El registro no existe',
-                    'status' => 'bad'
+                    'error' => 'El registro no existe',
                 ], 404);
             }
             $ingrediente->update([
@@ -63,10 +67,12 @@ class IngredienteController extends Controller
             ]);
             return response()->json([
                 'mensaje' => 'Registro se actualizo con exito',
-                'status' => 'ok'
             ]);
         } catch (\Throwable $th) {
-            return response()->json($th, 500);
+            return response()->json([
+                'error' => 'Errror en el servidor',
+                'details' => $th
+            ], 500);
         }
     }
 
@@ -76,17 +82,18 @@ class IngredienteController extends Controller
             $ingrediente = Ingrediente::find($id);
             if (!$ingrediente) {
                 return response()->json([
-                    'mensaje' => 'El registro no existe',
-                    'status' => 'bad'
+                    'error' => 'El registro no existe',
                 ], 404);
             }
             $ingrediente->delete();
             return response()->json([
-                'mensaje' => 'Registro se elimino con exito',
-                'status' => 'ok'
+                'mensaje' => 'Registro se elimino con exito'
             ]);
         } catch (\Throwable $th) {
-            return response()->json($th);
+            return response()->json([
+                'error' => 'Errror en el servidor',
+                'details' => $th
+            ], 500);
         }
     }
 }

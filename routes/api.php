@@ -5,7 +5,6 @@ use App\Http\Controllers\IngredienteController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PizzaController;
-use App\Http\Controllers\RolController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('problems', function () {
@@ -19,11 +18,11 @@ Route::post('logout', [AuthController::class, 'logout']);
 Route::post('refresh', [AuthController::class, 'refresh']);
 Route::post('me', [AuthController::class, 'me']);
 
+Route::resource('pedido', PedidoController::class);
 
-Route::group([ 'middleware' => 'api', ], function ($router) {
+Route::group([ 'middleware' => ['api', 'admin'], ], function ($router) {
     Route::get('ingrediente/all', [IngredienteController::class, 'all']);
     // Route::post('sendEmail', [MailController::class, 'sendEmail']);
-    Route::resource('pizza', PizzaController::class);
     Route::resource('ingrediente', IngredienteController::class);
-    Route::resource('pedido', PedidoController::class);
+    Route::resource('pizza', PizzaController::class);
 });
