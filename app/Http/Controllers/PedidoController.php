@@ -15,7 +15,7 @@ class PedidoController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('Auth')->only('index');
+        $this->middleware('admin')->only('index');
     }
 
     public function index()
