@@ -75,38 +75,40 @@
   >
     <template v-slot:body>
       <h3 class="text-center py-2">{{ titulo }}</h3>
-      <div class="row pb-2" v-if="titulo != 'Login'">
-        <div class="col-4 align-self-center">
-          Nombre: 
+      <form :action="($event) => $event.preventDefault()">
+        <div class="row pb-2" v-if="titulo != 'Login'">
+          <div class="col-4 align-self-center">
+            Nombre: 
+          </div>
+          <div class="col-8 text-start">
+            <input type="text" class="w-75 form-control" v-model="name">
+          </div>
         </div>
-        <div class="col-8 text-start">
-          <input type="text" class="w-75 form-control" v-model="name">
+        <div class="row pb-2">
+          <div class="col-4 align-self-center">
+            Correo: 
+          </div>
+          <div class="col-8 text-start">
+            <input type="email" class="w-75 form-control" v-model="email">
+          </div>
         </div>
-      </div>
-      <div class="row pb-2">
-        <div class="col-4 align-self-center">
-          Correo: 
+        <div class="row pb-2">
+          <div class="col-4 align-self-center">
+            Contraseña: 
+          </div>
+          <div class="col-8 text-start">
+            <input type="password" autocomplete="new-pass" class="w-75 form-control" v-model="password">
+          </div>
         </div>
-        <div class="col-8 text-start">
-          <input type="email" class="w-75 form-control" v-model="email">
+        <div class="py-2 text-center text-info">
+          <span 
+            class="cursor-pointer" 
+            @click="titulo = titulo == 'Login' ? 'Registrarse' : 'Login'"
+          >
+            {{ titulo == 'Login' ? 'Registrarse' : 'Login' }} ?
+          </span>
         </div>
-      </div>
-      <div class="row pb-2">
-        <div class="col-4 align-self-center">
-          Contraseña: 
-        </div>
-        <div class="col-8 text-start">
-          <input type="password" class="w-75 form-control" v-model="password">
-        </div>
-      </div>
-      <div class="py-2 text-center text-info">
-        <span 
-          class="cursor-pointer" 
-          @click="titulo = titulo == 'Login' ? 'Registrarse' : 'Login'"
-        >
-          {{ titulo == 'Login' ? 'Registrarse' : 'Login' }} ?
-        </span>
-      </div>
+      </form>
     </template>
     <template v-slot:footer>
       <button 
@@ -193,11 +195,14 @@ export default {
         }
       })
       const datos = {
-        token: localStorage.getItem('access_token'),
         venta_total: this.totalCarrito,
         pedido: carrito,
       };
-      const { mensaje, status, pizza } = await apiP.add(datos)
+      const { error, mensaje, status, pizza } = await apiP.add(datos)
+      if (error) {
+        this.mensaje(error)
+        return
+      }
       if ('success' == status) {
         this.$store.commit('setCarrito', [])
         this.$router.push({ name: 'home'});
@@ -222,15 +227,16 @@ export default {
             this.$router.push({ name: 'home'});
           }
         }
+        this.mensaje(mensaje, 'warning')
       }
-      this.mensaje(mensaje)
     },
     validarCheckout(){
-      const token = localStorage.getItem('access_token')
-      if (token) {
+      const { exist } = utility.getToken();
+      if (exist) {
         this.pagar()
         return
       }
+      utility.removeToken();
       this.condicionModal = true
     },
     mensaje(message = '', type = 'error'){
@@ -247,35 +253,35 @@ export default {
           email: this.email,
           password: this.password,
         }
-        const { status, mensaje, token } = await apiU.login(datos);
-        if (status == 'ok') {
-          localStorage.setItem('access_token', token)
-          this.mensaje(mensaje, 'success')
-          this.condicionModal = false;
-          this.pagar()
+        const { error, access_token } = await apiU.login(datos);
+        if (error) {
+          this.mensaje(error)
           return
         }
-        this.mensaje(mensaje)
+        utility.editToken(access_token);
+        this.mensaje('Iniciando Sesion ...', 'success')
+        this.condicionModal = false;
+        this.pagar()
       }
     },
     validar(condicion = false){
       if (condicion) {
         if (!this.name) {
           this.mensaje('El nombre es requerido')
-          return
+          return false
         }
       }
       if (!this.email) {
         this.mensaje('El correo es requerido')
-        return
+        return false
       }
       if (!this.validarEmail.test(this.email)) {
         this.mensaje('El correo no es valido')
-        return
+        return false
       }
       if (!this.password) {
         this.mensaje('La contraseña es requerida')
-        return
+        return false
       }
       return true
     },
@@ -287,15 +293,15 @@ export default {
           password: this.password,
           name: this.name,
         }
-        const { status, mensaje, token } = await apiU.register(datos);
-        if (status == 'ok') {
-          localStorage.setItem('access_token', token)
-          this.mensaje(mensaje, 'success')
-          this.condicionModal = false;
-          this.pagar()
+        const { error, access_token } = await apiU.register(datos);
+        if (error) {
+          this.mensaje(error)
           return
         }
-        this.mensaje(mensaje)
+        utility.editToken(access_token);
+        this.mensaje('Se registro usuario con exito', 'success')
+        this.condicionModal = false;
+        this.pagar()
       }
     },
     hide(){

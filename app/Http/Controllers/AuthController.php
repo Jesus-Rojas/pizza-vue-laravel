@@ -31,8 +31,7 @@ class AuthController extends Controller
             $user = User::where('email', $request['email'])->first();
             if ($user) {
                 return response()->json([
-                    'status' => 'bad',
-                    'mensaje' => 'El usuario ya se encuentra registrado en el sistema',
+                    'error' => 'El usuario ya se encuentra registrado en el sistema',
                 ], 403);
             }
             $user = User::create([

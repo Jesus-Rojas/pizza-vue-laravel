@@ -46,7 +46,7 @@ class PedidoController extends Controller
                                 'id' => $pizza->id,
                                 'cantidad' => $pizza->stock,
                             ]
-                        ], 424);
+                        ], 422);
                     } else {
                         $pizza->update([
                             'stock' => $pizza->stock - $value['cantidad']

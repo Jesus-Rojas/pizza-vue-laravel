@@ -67,7 +67,8 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const { payload, exist } = utility.getToken();
   if (exist) {
-    console.log(payload)
+    // console.log(payload)
+    // console.log(header)
   }
   /* isAuthenticated = localStorage.getItem('accessToken');
   if ( to.meta.requiresAuth && !isAuthenticated ) {
